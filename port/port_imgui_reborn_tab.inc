@@ -1,7 +1,7 @@
 /* Reborn ribbon tab — extracted from port_imgui_menu.cpp. Included into the same
  * translation unit; relies on the declarations already visible there. */
 static void DrawRibbonRebornTab(void) {
-    ImGui::TextWrapped("Quality-of-life features ported from Minish Cap Reborn "
+    I18n::TextWrapped("Quality-of-life features ported from Minish Cap Reborn "
                        "(GPL-3.0); see THIRD-PARTY-LICENSES.md. Toggles persist "
                        "until tmc_pc closes.");
     ImGui::Separator();
@@ -14,16 +14,16 @@ static void DrawRibbonRebornTab(void) {
         bool on = Port_Reborn_IsEnabled((RebornFeature)i);
         const char* label = Port_Reborn_FeatureLabel((RebornFeature)i);
         const char* desc = Port_Reborn_FeatureDescription((RebornFeature)i);
-        if (ImGui::Checkbox(label, &on)) {
+        if (I18n::Checkbox(label, &on)) {
             Port_Reborn_SetEnabled((RebornFeature)i, on);
         }
         if (desc && desc[0]) {
             ImGui::SameLine();
-            ImGui::TextDisabled("(?)");
+            I18n::TextDisabled("(?)");
             if (ImGui::IsItemHovered()) {
                 ImGui::BeginTooltip();
                 ImGui::PushTextWrapPos(360.0f);
-                ImGui::TextUnformatted(desc);
+                I18n::TextUnformatted(desc);
                 ImGui::PopTextWrapPos();
                 ImGui::EndTooltip();
             }
@@ -36,15 +36,15 @@ static void DrawRibbonRebornTab(void) {
         ImGui::Indent(20.0f);
         float dz = Port_Config_GetAnalogDeadzone();
         ImGui::SetNextItemWidth(180.0f);
-        if (ImGui::SliderFloat("Analog deadzone", &dz, 0.0f, 0.95f, "%.2f")) {
+        if (I18n::SliderFloat("Analog deadzone", &dz, 0.0f, 0.95f, "%.2f")) {
             Port_Config_SetAnalogDeadzone(dz);
         }
         ImGui::SameLine();
-        ImGui::TextDisabled("(?)");
+        I18n::TextDisabled("(?)");
         if (ImGui::IsItemHovered()) {
             ImGui::BeginTooltip();
             ImGui::PushTextWrapPos(360.0f);
-            ImGui::TextUnformatted("Left-stick displacement below this fraction is ignored, so the "
+            I18n::TextUnformatted("Left-stick displacement below this fraction is ignored, so the "
                                    "D-pad stays authoritative and a thumb resting on the stick won't "
                                    "drift. Raise it for a worn/drifty stick; lower it for a lighter "
                                    "touch. Default 0.30.");

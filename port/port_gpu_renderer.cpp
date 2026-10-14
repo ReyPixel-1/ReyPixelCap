@@ -568,6 +568,15 @@ extern "C" bool Port_GPU_ClaimWindow(SDL_Window* window, int fb_width, int fb_he
         }
     }
 
+    {
+        int saved = Port_Config_GetGpuFilter();
+        if (saved >= 0 && saved < (int)PORT_GPU_FILTER_COUNT) {
+            sActiveFilter = (PortGpuFilter)saved;
+            std::fprintf(stderr, "[gpu] filter restored from config: %s\n",
+                         Port_GPU_FilterName(sActiveFilter));
+        }
+    }
+
     std::fprintf(stderr, "[gpu] pipeline ready — %dx%d source, swapchain fmt=%u\n", sSourceW, sSourceH,
                  (unsigned)swap_fmt);
     return true;
@@ -1047,8 +1056,11 @@ extern "C" bool Port_GPU_SetVSync(bool enabled) {
 }
 
 extern "C" void Port_GPU_SetFilter(PortGpuFilter f) {
-    if ((unsigned)f < PORT_GPU_FILTER_COUNT)
+    if ((unsigned)f < PORT_GPU_FILTER_COUNT) {
         sActiveFilter = f;
+        if (Port_Config_GetGpuFilter() != (int)f)
+            Port_Config_SetGpuFilter((int)f); /* persist across restarts */
+    }
 }
 extern "C" PortGpuFilter Port_GPU_GetFilter(void) {
     return sActiveFilter;

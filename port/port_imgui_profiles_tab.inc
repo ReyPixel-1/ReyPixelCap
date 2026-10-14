@@ -5,7 +5,7 @@ static void DrawRibbonProfilesTab(void) {
     const int n = Port_Save_ListProfiles(names, 32);
     const std::string activeNow = Port_Save_GetActivePath();
 
-    ImGui::Text("Active profile: %s", activeNow.c_str());
+    I18n::Text("Active profile: %s", activeNow.c_str());
     ImGui::Separator();
 
     /* Rename buffer keyed by index, so each row has its own inline
@@ -15,9 +15,9 @@ static void DrawRibbonProfilesTab(void) {
     static int sConfirmDeleteRow = -1;
 
     if (ImGui::BeginTable("##profiles_table", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Profile File", ImGuiTableColumnFlags_WidthFixed, 180.0f);
-        ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-        ImGui::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Profile File", ImGuiTableColumnFlags_WidthFixed, 180.0f);
+        I18n::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+        I18n::TableSetupColumn("Actions", ImGuiTableColumnFlags_WidthStretch);
 
         for (int i = 0; i < n; ++i) {
             ImGui::PushID(i);
@@ -25,21 +25,21 @@ static void DrawRibbonProfilesTab(void) {
 
             // Column 1: Profile Name
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", names[i]);
+            I18n::Text("%s", names[i]);
 
             // Column 2: Status
             ImGui::TableSetColumnIndex(1);
             bool isActive = (std::string(names[i]) == activeNow);
             if (isActive) {
-                ImGui::TextColored(ImVec4(1.0f, 0.94f, 0.25f, 1.0f), "active");
+                I18n::TextColored(ImVec4(1.0f, 0.94f, 0.25f, 1.0f), "active");
             } else {
-                ImGui::TextDisabled("-");
+                I18n::TextDisabled("-");
             }
 
             // Column 3: Actions
             ImGui::TableSetColumnIndex(2);
             if (!isActive) {
-                if (ImGui::Button("Activate")) {
+                if (I18n::Button("Activate")) {
                     if (Port_Save_SetActivePath(names[i])) {
                         Port_Config_SetActiveSaveProfile(names[i]);
                         Port_DebugMenu_ToastFromExternal("Profile activated - go to title to load");
@@ -51,12 +51,12 @@ static void DrawRibbonProfilesTab(void) {
             }
             const bool isDefault = (std::strcmp(names[i], "tmc.sav") == 0);
             if (!isDefault) {
-                if (ImGui::Button("Rename")) {
+                if (I18n::Button("Rename")) {
                     sRenameRow = i;
                     snprintf(sRenameBuf[i], sizeof(sRenameBuf[i]), "%s", names[i]);
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("Delete"))
+                if (I18n::Button("Delete"))
                     sConfirmDeleteRow = i;
             }
 
@@ -64,10 +64,10 @@ static void DrawRibbonProfilesTab(void) {
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
                 ImGui::PushItemWidth(160);
-                ImGui::InputText("##rename", sRenameBuf[i], sizeof(sRenameBuf[i]));
+                I18n::InputText("##rename", sRenameBuf[i], sizeof(sRenameBuf[i]));
                 ImGui::PopItemWidth();
                 ImGui::TableSetColumnIndex(2);
-                if (ImGui::Button("OK")) {
+                if (I18n::Button("OK")) {
                     if (Port_Save_RenameProfile(names[i], sRenameBuf[i])) {
                         Port_DebugMenu_ToastFromExternal("Profile renamed");
                     } else {
@@ -76,15 +76,15 @@ static void DrawRibbonProfilesTab(void) {
                     sRenameRow = -1;
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("X"))
+                if (I18n::Button("X"))
                     sRenameRow = -1;
             }
             if (sConfirmDeleteRow == i) {
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-                ImGui::TextColored(ImVec4(0.9f, 0.35f, 0.35f, 1.0f), "Delete %s?", names[i]);
+                I18n::TextColored(ImVec4(0.9f, 0.35f, 0.35f, 1.0f), "Delete %s?", names[i]);
                 ImGui::TableSetColumnIndex(2);
-                if (ImGui::Button("Confirm delete")) {
+                if (I18n::Button("Confirm delete")) {
                     if (Port_Save_DeleteProfile(names[i])) {
                         Port_DebugMenu_ToastFromExternal("Profile deleted");
                     } else {
@@ -94,7 +94,7 @@ static void DrawRibbonProfilesTab(void) {
                     sRenameRow = -1;
                 }
                 ImGui::SameLine();
-                if (ImGui::Button("Cancel"))
+                if (I18n::Button("Cancel"))
                     sConfirmDeleteRow = -1;
             }
             ImGui::PopID();
@@ -103,7 +103,7 @@ static void DrawRibbonProfilesTab(void) {
     }
 
     ImGui::Separator();
-    if (ImGui::Button("+ Save current as new profile")) {
+    if (I18n::Button("+ Save current as new profile")) {
         char name[64];
         int k = 1;
         for (; k <= 99; ++k) {

@@ -19,12 +19,12 @@ static void DrawRibbonWarpTab(void) {
     ImGui::SetNextItemWidth(280);
     ImGui::InputTextWithHint("##warpFilter", "filter by area name (e.g. 'castle')", sWarpFilter, sizeof(sWarpFilter));
     ImGui::SameLine();
-    if (ImGui::Button("Clear"))
+    if (I18n::Button("Clear"))
         sWarpFilter[0] = '\0';
     ImGui::SameLine();
-    ImGui::TextDisabled("|");
+    I18n::TextDisabled("|");
     ImGui::SameLine();
-    ImGui::TextDisabled("L/R bumpers = page jump");
+    I18n::TextDisabled("L/R bumpers = page jump");
 
     /* Free-coordinate teleport within the CURRENT room. Pre-fills from Link's
      * live position; in-game only. (All primitives already exist - this is the
@@ -34,16 +34,16 @@ static void DrawRibbonWarpTab(void) {
         static int sTeleX = 0, sTeleY = 0;
         unsigned short px = 0, py = 0;
         const bool inGame = Port_DebugQuery_PlayerXY(&px, &py) != 0;
-        ImGui::TextUnformatted("Teleport (current room):");
+        I18n::TextUnformatted("Teleport (current room):");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(80);
-        ImGui::InputInt("X##tele", &sTeleX, 0);
+        I18n::InputInt("X##tele", &sTeleX, 0);
         ImGui::SameLine();
         ImGui::SetNextItemWidth(80);
-        ImGui::InputInt("Y##tele", &sTeleY, 0);
+        I18n::InputInt("Y##tele", &sTeleY, 0);
         ImGui::BeginDisabled(!inGame);
         ImGui::SameLine();
-        if (ImGui::Button("Go##tele")) {
+        if (I18n::Button("Go##tele")) {
             unsigned short tx = (unsigned short)(sTeleX < 0 ? 0 : sTeleX);
             unsigned short ty = (unsigned short)(sTeleY < 0 ? 0 : sTeleY);
             if (Port_DebugAction_TeleportXY(tx, ty)) {
@@ -53,24 +53,24 @@ static void DrawRibbonWarpTab(void) {
             }
         }
         ImGui::SameLine();
-        if (ImGui::Button("Use Link's pos")) {
+        if (I18n::Button("Use Link's pos")) {
             sTeleX = px;
             sTeleY = py;
         }
         ImGui::EndDisabled();
         if (!inGame) {
             ImGui::SameLine();
-            ImGui::TextDisabled("(in-game only)");
+            I18n::TextDisabled("(in-game only)");
         }
     }
     {
         bool noclip = Port_DebugQuery_Noclip() != 0;
-        if (ImGui::Checkbox("Noclip (walk through walls)", &noclip)) {
+        if (I18n::Checkbox("Noclip (walk through walls)", &noclip)) {
             Port_DebugAction_SetNoclip(noclip ? 1 : 0);
         }
         if (Port_Config_GetConsoleParity()) {
             ImGui::SameLine();
-            ImGui::TextDisabled("(disabled in Console-Parity)");
+            I18n::TextDisabled("(disabled in Console-Parity)");
         }
     }
     {
@@ -78,13 +78,13 @@ static void DrawRibbonWarpTab(void) {
         const bool inGame = Port_DebugQuery_PlayerXY(&px, &py) != 0;
         const bool isMinish = inGame && (Port_DebugQuery_IsMinish() != 0);
         ImGui::BeginDisabled(!inGame);
-        if (ImGui::Button(isMinish ? "Grow to Normal Size" : "Shrink to Minish")) {
+        if (I18n::Button(isMinish ? "Grow to Normal Size" : "Shrink to Minish")) {
             Port_DebugAction_ToggleMinish();
         }
         ImGui::EndDisabled();
         if (!inGame) {
             ImGui::SameLine();
-            ImGui::TextDisabled("(in-game only)");
+            I18n::TextDisabled("(in-game only)");
         }
     }
     ImGui::Separator();
@@ -96,7 +96,7 @@ static void DrawRibbonWarpTab(void) {
     static char sLetterFilter = 0; /* 0 = no letter filter */
     {
         const char* kLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        if (ImGui::SmallButton("All##warpLet"))
+        if (I18n::SmallButton("All##warpLet"))
             sLetterFilter = 0;
         for (const char* p = kLetters; *p; ++p) {
             ImGui::SameLine();
@@ -104,11 +104,11 @@ static void DrawRibbonWarpTab(void) {
             std::snprintf(id, sizeof(id), "%c##wl", *p);
             if (sLetterFilter == *p) {
                 ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.30f, 0.55f, 0.30f, 1.0f));
-                if (ImGui::SmallButton(id))
+                if (I18n::SmallButton(id))
                     sLetterFilter = 0;
                 ImGui::PopStyleColor();
             } else {
-                if (ImGui::SmallButton(id))
+                if (I18n::SmallButton(id))
                     sLetterFilter = *p;
             }
         }
@@ -182,7 +182,7 @@ static void DrawRibbonWarpTab(void) {
             shown++;
 
             ImGui::PushID((int)area);
-            if (ImGui::CollapsingHeader(header)) {
+            if (I18n::CollapsingHeader(header)) {
                 ImGui::Indent();
                 /* Per-room buttons in a 3-column grid for compactness. Room 0
                  * is simply the first grid entry below — there is no separate
@@ -195,7 +195,7 @@ static void DrawRibbonWarpTab(void) {
                     char roomLabel[48];
                     std::snprintf(roomLabel, sizeof(roomLabel), "Room 0x%02X", r);
                     ImGui::PushID(r);
-                    if (ImGui::Button(roomLabel, ImVec2(120, 0))) {
+                    if (I18n::Button(roomLabel, ImVec2(120, 0))) {
                         unsigned short cx = 0, cy = 0;
                         unsigned char layer = 1;
                         if (!Port_DebugAction_WarpSpawnOverride(a, (unsigned char)r, &cx, &cy, &layer)) {
@@ -221,7 +221,7 @@ static void DrawRibbonWarpTab(void) {
             ImGui::PopID();
         }
         if (shown == 0) {
-            ImGui::TextDisabled("No areas match the filter.");
+            I18n::TextDisabled("No areas match the filter.");
         }
     }
     ImGui::EndChild();

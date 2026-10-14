@@ -246,7 +246,7 @@ static void RandoUi_RemoveOverride(const char* define) {
 
 static void DrawRandoCosmeticsSection(void) {
     ImGui::Spacing();
-    if (!ImGui::CollapsingHeader("Cosmetics", ImGuiTreeNodeFlags_DefaultOpen))
+    if (!I18n::CollapsingHeader("Cosmetics", ImGuiTreeNodeFlags_DefaultOpen))
         return;
 
     static const char* kTunicColors[] = { "Green (Vanilla)", "Red", "Blue", "Purple", "Orange", "Grey", "Random" };
@@ -257,11 +257,11 @@ static void DrawRandoCosmeticsSection(void) {
     bool changed = false;
 
     ImGui::SetNextItemWidth(200);
-    if (ImGui::Combo("Tunic color", &tunic, kTunicColors, 7)) {
+    if (I18n::Combo("Tunic color", &tunic, kTunicColors, 7)) {
         changed = true;
     }
     ImGui::SetNextItemWidth(200);
-    if (ImGui::Combo("Heart color", &heart, kHeartColors, 7)) {
+    if (I18n::Combo("Heart color", &heart, kHeartColors, 7)) {
         changed = true;
     }
 
@@ -333,11 +333,11 @@ static void RandoUi_SettingDefaultValue(const RandoLogicSetting* s, char* out, s
 
 static void RandoUi_HelpTooltip(const char* text) {
     ImGui::SameLine();
-    ImGui::TextDisabled("(?)");
+    I18n::TextDisabled("(?)");
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(420.0f);
-        ImGui::TextUnformatted(text);
+        I18n::TextUnformatted(text);
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
@@ -462,14 +462,14 @@ static void DrawRandoPresetsRow(void) {
     static int sPresetIdx = 0;
     const int preset_count = (int)(sizeof(kRandoPresets) / sizeof(kRandoPresets[0]));
     ImGui::SetNextItemWidth(220);
-    if (ImGui::BeginCombo("##rando_preset", kRandoPresets[sPresetIdx].name)) {
+    if (I18n::BeginCombo("##rando_preset", kRandoPresets[sPresetIdx].name)) {
         for (int i = 0; i < preset_count; ++i) {
-            if (ImGui::Selectable(kRandoPresets[i].name, i == sPresetIdx))
+            if (I18n::Selectable(kRandoPresets[i].name, i == sPresetIdx))
                 sPresetIdx = i;
             if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
                 ImGui::BeginTooltip();
                 ImGui::PushTextWrapPos(360.0f);
-                ImGui::TextUnformatted(kRandoPresets[i].desc);
+                I18n::TextUnformatted(kRandoPresets[i].desc);
                 ImGui::PopTextWrapPos();
                 ImGui::EndTooltip();
             }
@@ -477,7 +477,7 @@ static void DrawRandoPresetsRow(void) {
         ImGui::EndCombo();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Load preset"))
+    if (I18n::Button("Load preset"))
         RandoUi_ApplyPreset(sPresetIdx);
     RandoUi_HelpTooltip(kRandoPresets[sPresetIdx].desc);
 }
@@ -488,13 +488,13 @@ static void DrawRandoSettingRow(const RandoLogicSetting* s, int idx) {
     if (modified) {
         /* Modified-from-default marker: color cue plus a non-color glyph so
          * the state never relies on color alone. */
-        ImGui::TextColored(ImVec4(0.95f, 0.75f, 0.25f, 1.0f), "*");
+        I18n::TextColored(ImVec4(0.95f, 0.75f, 0.25f, 1.0f), "*");
         ImGui::SameLine(0.0f, 4.0f);
     }
     switch (s->type) {
         case RANDO_SETTING_FLAG: {
             bool v = s->flag_on;
-            if (ImGui::Checkbox(s->label, &v))
+            if (I18n::Checkbox(s->label, &v))
                 RandoUi_ApplyOverride(s->define, v ? "true" : "false");
             break;
         }
@@ -502,10 +502,10 @@ static void DrawRandoSettingRow(const RandoLogicSetting* s, int idx) {
             const int oi = s->option_index;
             const char* preview = (oi >= 0 && oi < s->option_count) ? s->opt_label[oi] : "?";
             ImGui::SetNextItemWidth(200);
-            if (ImGui::BeginCombo(s->label, preview)) {
+            if (I18n::BeginCombo(s->label, preview)) {
                 for (int o = 0; o < s->option_count; ++o) {
                     const bool sel = (o == oi);
-                    if (ImGui::Selectable(s->opt_label[o], sel))
+                    if (I18n::Selectable(s->opt_label[o], sel))
                         RandoUi_ApplyOverride(s->define, s->opt_value[o]);
                     if (sel)
                         ImGui::SetItemDefaultFocus();
@@ -521,7 +521,7 @@ static void DrawRandoSettingRow(const RandoLogicSetting* s, int idx) {
             static int sNumEditVal = 0;
             int v = (sNumEditIdx == idx) ? sNumEditVal : s->number;
             ImGui::SetNextItemWidth(200);
-            if (ImGui::SliderInt(s->label, &v, s->num_min, s->num_max)) {
+            if (I18n::SliderInt(s->label, &v, s->num_min, s->num_max)) {
                 sNumEditIdx = idx;
                 sNumEditVal = v;
             }
@@ -537,8 +537,8 @@ static void DrawRandoSettingRow(const RandoLogicSetting* s, int idx) {
             break;
     }
     if (ImGui::BeginPopupContextItem("##setting_ctx")) {
-        ImGui::TextDisabled("%s", s->define);
-        if (ImGui::MenuItem("Reset to default", NULL, false, modified)) {
+        I18n::TextDisabled("%s", s->define);
+        if (ImGui::MenuItem("Restablecer valor predeterminado", NULL, false, modified)) {
             char value[40];
             RandoUi_SettingDefaultValue(s, value, sizeof(value));
             RandoUi_ApplyOverride(s->define, value);
@@ -556,22 +556,22 @@ static void DrawRandoLogicSettingsBrowser(float height) {
 
     sFilter.Draw("##rando_settings_filter", 200);
     ImGui::SameLine();
-    ImGui::TextDisabled("Search");
+    I18n::TextDisabled("Search");
     const int modified = RandoUi_ModifiedSettingCount();
     if (modified > 0) {
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(0.95f, 0.75f, 0.25f, 1.0f), "* %d changed", modified);
+        I18n::TextColored(ImVec4(0.95f, 0.75f, 0.25f, 1.0f), "* %d changed", modified);
         ImGui::SameLine();
-        if (ImGui::SmallButton("Reset all"))
+        if (I18n::SmallButton("Reset all"))
             ImGui::OpenPopup("##rando_reset_all");
         if (ImGui::BeginPopup("##rando_reset_all")) {
-            ImGui::TextUnformatted("Reset every setting to the file defaults?");
-            if (ImGui::Button("Reset")) {
+            I18n::TextUnformatted("Reset every setting to the file defaults?");
+            if (I18n::Button("Reset")) {
                 RandoUi_ResetSettingsToDefaults();
                 ImGui::CloseCurrentPopup();
             }
             ImGui::SameLine();
-            if (ImGui::Button("Keep"))
+            if (I18n::Button("Keep"))
                 ImGui::CloseCurrentPopup();
             ImGui::EndPopup();
         }
@@ -597,7 +597,7 @@ static void DrawRandoLogicSettingsBrowser(float height) {
                 std::snprintf(cur_group, sizeof(cur_group), "%s", s->group);
                 char crumb[64];
                 std::snprintf(crumb, sizeof(crumb), "%s > %s", s->tab, s->group);
-                ImGui::SeparatorText(crumb);
+                I18n::SeparatorText(crumb);
             }
         } else {
             if (std::strcmp(cur_tab, s->tab) != 0) {
@@ -621,14 +621,14 @@ static void DrawRandoLogicSettingsBrowser(float height) {
                 } else {
                     std::snprintf(header, sizeof(header), "%s###tab_%s", s->tab, s->tab);
                 }
-                tab_open = ImGui::CollapsingHeader(
+                tab_open = I18n::CollapsingHeader(
                     header, (std::strcmp(s->tab, "Main Settings") == 0) ? ImGuiTreeNodeFlags_DefaultOpen : 0);
             }
             if (!tab_open)
                 continue;
             if (std::strcmp(cur_group, s->group) != 0) {
                 std::snprintf(cur_group, sizeof(cur_group), "%s", s->group);
-                ImGui::SeparatorText(s->group);
+                I18n::SeparatorText(s->group);
             }
         }
         DrawRandoSettingRow(s, (int)i);
@@ -803,9 +803,9 @@ static bool sShowRandoTracker = false;
  * dimmed when not. */
 static void TrackerCell(const char* label, bool owned, const ImVec4& color) {
     if (owned)
-        ImGui::TextColored(color, "[ %s ]", label);
+        I18n::TextColored(color, "[ %s ]", label);
     else
-        ImGui::TextDisabled("[ %s ]", label);
+        I18n::TextDisabled("[ %s ]", label);
 }
 
 static void DrawRandoTrackerOverlay(void) {
@@ -831,7 +831,7 @@ static void DrawRandoTrackerOverlay(void) {
     ImGui::SetNextWindowSize(ImVec2(600, 400), ImGuiCond_FirstUseEver);
     if (ImGui::Begin("Randomizer HUD Tracker", &sShowRandoTracker, ImGuiWindowFlags_NoCollapse)) {
         if (ImGui::BeginTabBar("##tracker_tabs")) {
-            if (ImGui::BeginTabItem("Items")) {
+            if (I18n::BeginTabItem("Items")) {
                 struct TrackerItem {
                     const char* label;
                     const char* sym;
@@ -849,7 +849,7 @@ static void DrawRandoTrackerOverlay(void) {
                     { "Grip Ring", "Items.GripRing" },
                 };
 
-                ImGui::SeparatorText("Key Items");
+                I18n::SeparatorText("Key Items");
                 if (ImGui::BeginTable("##tracker_items_grid", 5, ImGuiTableFlags_SizingFixedFit)) {
                     for (int i = 0; i < 10; ++i) {
                         if ((i % 5) == 0)
@@ -861,65 +861,65 @@ static void DrawRandoTrackerOverlay(void) {
                     ImGui::EndTable();
                 }
 
-                ImGui::SeparatorText("Progressive Upgrades");
+                I18n::SeparatorText("Progressive Upgrades");
                 if (ImGui::BeginTable("##tracker_upgrades", 2, ImGuiTableFlags_SizingFixedFit)) {
-                    ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
-                    ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+                    I18n::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+                    I18n::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Sword");
+                    I18n::Text("Sword");
                     ImGui::TableSetColumnIndex(1);
                     if (RandoUi_CheckItemOwned("Items.FourSword"))
-                        ImGui::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Four Sword (Infused)");
+                        I18n::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Four Sword (Infused)");
                     else if (RandoUi_CheckItemOwned("Items.BlueSword"))
-                        ImGui::Text("Blue Sword");
+                        I18n::Text("Blue Sword");
                     else if (RandoUi_CheckItemOwned("Items.RedSword"))
-                        ImGui::Text("Red Sword");
+                        I18n::Text("Red Sword");
                     else if (RandoUi_CheckItemOwned("Items.GreenSword"))
-                        ImGui::Text("Green Sword");
+                        I18n::Text("Green Sword");
                     else if (RandoUi_CheckItemOwned("Items.SmithSword"))
-                        ImGui::Text("Smith's Sword");
+                        I18n::Text("Smith's Sword");
                     else
-                        ImGui::TextDisabled("None");
+                        I18n::TextDisabled("None");
 
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Shield");
+                    I18n::Text("Shield");
                     ImGui::TableSetColumnIndex(1);
                     if (RandoUi_CheckItemOwned("Items.MirrorShield"))
-                        ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.95f, 1.0f), "Mirror Shield");
+                        I18n::TextColored(ImVec4(0.4f, 0.8f, 0.95f, 1.0f), "Mirror Shield");
                     else if (RandoUi_CheckItemOwned("Items.Shield"))
-                        ImGui::Text("Small Shield");
+                        I18n::Text("Small Shield");
                     else
-                        ImGui::TextDisabled("None");
+                        I18n::TextDisabled("None");
 
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Bow");
+                    I18n::Text("Bow");
                     ImGui::TableSetColumnIndex(1);
                     if (RandoUi_CheckItemOwned("Items.LightArrow"))
-                        ImGui::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Light Bow");
+                        I18n::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Light Bow");
                     else if (RandoUi_CheckItemOwned("Items.Bow"))
-                        ImGui::Text("Bow");
+                        I18n::Text("Bow");
                     else
-                        ImGui::TextDisabled("None");
+                        I18n::TextDisabled("None");
 
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
-                    ImGui::Text("Bombs");
+                    I18n::Text("Bombs");
                     ImGui::TableSetColumnIndex(1);
                     if (RandoUi_CheckItemOwned("Items.RemoteBombs"))
-                        ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.95f, 1.0f), "Remote Bombs");
+                        I18n::TextColored(ImVec4(0.4f, 0.8f, 0.95f, 1.0f), "Remote Bombs");
                     else if (RandoUi_CheckItemOwned("Items.Bombs"))
-                        ImGui::Text("Normal Bombs");
+                        I18n::Text("Normal Bombs");
                     else
-                        ImGui::TextDisabled("None");
+                        I18n::TextDisabled("None");
 
                     ImGui::EndTable();
                 }
 
-                ImGui::SeparatorText("Elements");
+                I18n::SeparatorText("Elements");
                 if (ImGui::BeginTable("##tracker_elements", 4, ImGuiTableFlags_SizingFixedFit)) {
                     ImGui::TableNextRow();
                     ImGui::TableSetColumnIndex(0);
@@ -940,7 +940,7 @@ static void DrawRandoTrackerOverlay(void) {
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("Dungeons")) {
+            if (I18n::BeginTabItem("Dungeons")) {
                 static const struct {
                     const char* name;
                     int idx;
@@ -958,53 +958,53 @@ static void DrawRandoTrackerOverlay(void) {
                 if (ImGui::BeginTable("##tracker_dungeons", 5,
                                       ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg |
                                           ImGuiTableFlags_BordersOuter)) {
-                    ImGui::TableSetupColumn("Dungeon", ImGuiTableColumnFlags_WidthFixed, 180.0f);
-                    ImGui::TableSetupColumn("Element", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                    ImGui::TableSetupColumn("Keys", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                    ImGui::TableSetupColumn("Big Key", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-                    ImGui::TableSetupColumn("Boss Clear", ImGuiTableColumnFlags_WidthStretch);
+                    I18n::TableSetupColumn("Dungeon", ImGuiTableColumnFlags_WidthFixed, 180.0f);
+                    I18n::TableSetupColumn("Element", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                    I18n::TableSetupColumn("Keys", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                    I18n::TableSetupColumn("Big Key", ImGuiTableColumnFlags_WidthFixed, 80.0f);
+                    I18n::TableSetupColumn("Boss Clear", ImGuiTableColumnFlags_WidthStretch);
                     ImGui::TableHeadersRow();
 
                     for (int i = 0; i < 7; ++i) {
                         ImGui::TableNextRow();
                         int idx = kDungeonInfo[i].idx;
                         ImGui::TableSetColumnIndex(0);
-                        ImGui::Text("%s", kDungeonInfo[i].name);
+                        I18n::Text("%s", kDungeonInfo[i].name);
 
                         ImGui::TableSetColumnIndex(1);
                         if (kDungeonInfo[i].elem[0]) {
                             bool has_el = RandoUi_CheckItemOwned(kDungeonInfo[i].elem);
                             if (has_el)
-                                ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "Yes");
+                                I18n::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "Yes");
                             else
-                                ImGui::TextDisabled("-");
+                                I18n::TextDisabled("-");
                         } else {
-                            ImGui::TextDisabled("N/A");
+                            I18n::TextDisabled("N/A");
                         }
 
                         ImGui::TableSetColumnIndex(2);
                         unsigned keys = Rando_GetDungeonKeyCount(idx);
                         if (keys > 0)
-                            ImGui::Text("%u keys", keys);
+                            I18n::Text("%u keys", keys);
                         else
-                            ImGui::TextDisabled("0");
+                            I18n::TextDisabled("0");
 
                         ImGui::TableSetColumnIndex(3);
                         bool has_bk = Rando_GetDungeonHasBigKey(idx);
                         if (has_bk)
-                            ImGui::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Yes");
+                            I18n::TextColored(ImVec4(0.95f, 0.8f, 0.2f, 1.0f), "Yes");
                         else
-                            ImGui::TextDisabled("-");
+                            I18n::TextDisabled("-");
 
                         ImGui::TableSetColumnIndex(4);
                         if (idx <= 6) {
                             bool cleared = CheckGlobalFlag(idx);
                             if (cleared)
-                                ImGui::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "Defeated");
+                                I18n::TextColored(ImVec4(0.4f, 0.9f, 0.4f, 1.0f), "Defeated");
                             else
-                                ImGui::TextDisabled("-");
+                                I18n::TextDisabled("-");
                         } else {
-                            ImGui::TextDisabled("N/A");
+                            I18n::TextDisabled("N/A");
                         }
                     }
                     ImGui::EndTable();
@@ -1012,11 +1012,11 @@ static void DrawRandoTrackerOverlay(void) {
                 ImGui::EndTabItem();
             }
 
-            if (ImGui::BeginTabItem("Locations")) {
+            if (I18n::BeginTabItem("Locations")) {
                 static ImGuiTextFilter sLocFilter;
                 sLocFilter.Draw("##loc_filter", 180);
                 ImGui::SameLine();
-                ImGui::TextDisabled("Filter by area/check name");
+                I18n::TextDisabled("Filter by area/check name");
 
                 ImGui::BeginChild("##tracker_loc_list", ImVec2(0, 0), ImGuiChildFlags_Borders, 0);
                 char cur_area[48] = "";
@@ -1067,7 +1067,7 @@ static void DrawRandoTrackerOverlay(void) {
                         }
                         char header[64];
                         std::snprintf(header, sizeof(header), "%s (%d available)###area_%s", cur_area, avail, cur_area);
-                        area_open = ImGui::CollapsingHeader(header, ImGuiTreeNodeFlags_DefaultOpen);
+                        area_open = I18n::CollapsingHeader(header, ImGuiTreeNodeFlags_DefaultOpen);
                     }
 
                     if (area_open) {
@@ -1078,9 +1078,9 @@ static void DrawRandoTrackerOverlay(void) {
                         }
                         ImGui::Bullet();
                         ImGui::SameLine();
-                        ImGui::TextUnformatted(label);
+                        I18n::TextUnformatted(label);
                         if (ImGui::IsItemHovered()) {
-                            ImGui::SetTooltip("Logical check: %s", name);
+                            I18n::SetTooltip("Logical check: %s", name);
                         }
                     }
                 }
@@ -1137,13 +1137,13 @@ static void DrawRibbonRandomizerTab(void) {
         }
     }
 
-    ImGui::TextUnformatted("Native logic randomizer");
+    I18n::TextUnformatted("Native logic randomizer");
     ImGui::SameLine();
-    ImGui::TextDisabled("(?)");
+    I18n::TextDisabled("(?)");
     if (ImGui::IsItemHovered()) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(360.0f);
-        ImGui::TextUnformatted("Rolls rewards from the bundled logic file and "
+        I18n::TextUnformatted("Rolls rewards from the bundled logic file and "
                                "resolves them in the PC game. Generation verifies the chosen "
                                "reachability goal. The seed persists per save slot.");
         ImGui::PopTextWrapPos();
@@ -1151,20 +1151,20 @@ static void DrawRibbonRandomizerTab(void) {
     }
     ImGui::Separator();
 
-    ImGui::Text("Source ROM:  %s", src_rom ? src_rom : "(none)");
-    ImGui::Text("Region:      %s", region_label);
-    ImGui::Text("Logic:       default.logic (%u parsed locations)",
+    I18n::Text("Source ROM:  %s", src_rom ? src_rom : "(none)");
+    I18n::Text("Region:      %s", region_label);
+    I18n::Text("Logic:       default.logic (%u parsed locations)",
                 RandoLogic_GetLocationCountRaw());
 
     if (Rando_IsActive()) {
         static const char* kPoolNames[RANDO_ITEM_POOL_COUNT] = { "Balanced", "Reduced", "Plentiful" };
         const RandomizerSettings active = Rando_GetSettings();
         const int pool = (active.item_difficulty < RANDO_ITEM_POOL_COUNT) ? (int)active.item_difficulty : 0;
-        ImGui::TextColored(ImVec4(0.4f, 0.85f, 0.4f, 1.0f), "Active seed: %llu - %s pool%s",
+        I18n::TextColored(ImVec4(0.4f, 0.85f, 0.4f, 1.0f), "Active seed: %llu - %s pool%s",
                            (unsigned long long)Rando_GetSeed64(), kPoolNames[pool],
                            active.glitchless_logic ? ", glitchless" : "");
         ImGui::SameLine();
-        if (ImGui::SmallButton("Copy seed")) {
+        if (I18n::SmallButton("Copy seed")) {
             char text[32];
             std::snprintf(text, sizeof(text), "%llu", (unsigned long long)Rando_GetSeed64());
             ImGui::SetClipboardText(text);
@@ -1174,53 +1174,53 @@ static void DrawRibbonRandomizerTab(void) {
             std::snprintf(fp, sizeof(fp), "%016llX", (unsigned long long)Rando_GetLogicFingerprint());
         else
             std::snprintf(fp, sizeof(fp), "%08X", Rando_SettingsFingerprint(&active));
-        ImGui::Text("Logic fingerprint: %s", fp);
+        I18n::Text("Logic fingerprint: %s", fp);
         RandoUi_HelpTooltip("Share the seed and logic fingerprint to reproduce placements "
                             "with the same Picori version.");
         ImGui::SameLine();
-        if (ImGui::SmallButton("Copy fingerprint")) {
+        if (I18n::SmallButton("Copy fingerprint")) {
             ImGui::SetClipboardText(fp);
         }
-        ImGui::Checkbox("Show HUD Tracker", &sShowRandoTracker);
+        I18n::Checkbox("Show HUD Tracker", &sShowRandoTracker);
     } else {
-        ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No seed rolled - vanilla.");
+        I18n::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "No seed rolled - vanilla.");
     }
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Settings");
+    I18n::SeparatorText("Settings");
 
     int difficulty = (int)sRandoUiSettings.item_difficulty;
     bool changed = false;
 
     ImGui::SetNextItemWidth(280);
-    if (ImGui::Combo("Item pool", &difficulty, kRandoPoolCombo, RANDO_ITEM_POOL_COUNT)) {
+    if (I18n::Combo("Item pool", &difficulty, kRandoPoolCombo, RANDO_ITEM_POOL_COUNT)) {
         sRandoUiSettings.item_difficulty = (RandoItemPoolDifficulty)difficulty;
         changed = true;
     }
     RandoUi_HelpTooltip(kRandoPoolTooltip);
 
-    if (ImGui::Checkbox("Glitchless logic", &sRandoUiSettings.glitchless_logic))
+    if (I18n::Checkbox("Glitchless logic", &sRandoUiSettings.glitchless_logic))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Obscure spots", &sRandoUiSettings.obscure_locations))
+    if (I18n::Checkbox("Obscure spots", &sRandoUiSettings.obscure_locations))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Shuffle kinstones", &sRandoUiSettings.shuffle_kinstones))
+    if (I18n::Checkbox("Shuffle kinstones", &sRandoUiSettings.shuffle_kinstones))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Shuffle entrances", &sRandoUiSettings.shuffle_entrances))
+    if (I18n::Checkbox("Shuffle entrances", &sRandoUiSettings.shuffle_entrances))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Shuffle dojos", &sRandoUiSettings.shuffle_dojos))
+    if (I18n::Checkbox("Shuffle dojos", &sRandoUiSettings.shuffle_dojos))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Shuffle dungeon items", &sRandoUiSettings.shuffle_dungeon_items))
+    if (I18n::Checkbox("Shuffle dungeon items", &sRandoUiSettings.shuffle_dungeon_items))
         changed = true;
     RandoUi_HelpTooltip("Off: keys, maps, compasses and big keys shuffle within their own "
                         "dungeons. On: all four families can appear anywhere (keysanity). "
                         "Each pickup credits its home dungeon.");
 
-    if (ImGui::Checkbox("Open world", &sRandoUiSettings.open_world))
+    if (I18n::Checkbox("Open world", &sRandoUiSettings.open_world))
         changed = true;
     RandoUi_HelpTooltip("Starts with every permanently solvable obstacle pre-solved: cut "
                         "trees, cracked blocks, bomb walls, boulder shortcuts, non-key "
@@ -1229,28 +1229,28 @@ static void DrawRibbonRandomizerTab(void) {
                         "Settings \"Open\"). Less walking, shorter seeds.");
 
     ImGui::SameLine();
-    if (ImGui::Checkbox("Sleep warp (homewarp)", &sRandoUiSettings.homewarp))
+    if (I18n::Checkbox("Sleep warp (homewarp)", &sRandoUiSettings.homewarp))
         changed = true;
 
-    if (ImGui::Checkbox("Start with Smith's Sword", &sRandoUiSettings.start_sword))
+    if (I18n::Checkbox("Start with Smith's Sword", &sRandoUiSettings.start_sword))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Early Wind Crests", &sRandoUiSettings.early_crests))
+    if (I18n::Checkbox("Early Wind Crests", &sRandoUiSettings.early_crests))
         changed = true;
     ImGui::SameLine();
-    if (ImGui::Checkbox("Fast text (instant text)", &sRandoUiSettings.instant_text))
+    if (I18n::Checkbox("Fast text (instant text)", &sRandoUiSettings.instant_text))
         changed = true;
 
     int access = (int)sRandoUiSettings.accessibility;
     ImGui::SetNextItemWidth(280);
-    if (ImGui::Combo("Accessibility", &access, kRandoAccessCombo, RANDO_ACCESS_COUNT)) {
+    if (I18n::Combo("Accessibility", &access, kRandoAccessCombo, RANDO_ACCESS_COUNT)) {
         sRandoUiSettings.accessibility = (RandoAccessibility)access;
         changed = true;
     }
     RandoUi_HelpTooltip(kRandoAccessTooltip);
 
     if (!sRandoUiSettings.glitchless_logic) {
-        ImGui::SeparatorText("Glitch tricks (progression may be placed behind these)");
+        I18n::SeparatorText("Glitch tricks (progression may be placed behind these)");
         if (ImGui::CheckboxFlags(kRandoTrickOcarina, &sRandoUiSettings.tricks, RANDO_TRICK_OCARINA_GLITCH))
             changed = true;
         if (ImGui::CheckboxFlags(kRandoTrickCrenel, &sRandoUiSettings.tricks, RANDO_TRICK_CRENEL_CLIP))
@@ -1258,7 +1258,7 @@ static void DrawRibbonRandomizerTab(void) {
         if (ImGui::CheckboxFlags(kRandoTrickPjs, &sRandoUiSettings.tricks, RANDO_TRICK_PORTAL_JUMP_STORAGE))
             changed = true;
     } else {
-        ImGui::TextDisabled("Glitch tricks are selectable when Glitchless logic is OFF.");
+        I18n::TextDisabled("Glitch tricks are selectable when Glitchless logic is OFF.");
     }
 
     if (changed) {
@@ -1277,11 +1277,11 @@ static void DrawRibbonRandomizerTab(void) {
 
     ImGui::Spacing();
     ImGui::SetNextItemWidth(280);
-    ImGui::InputText("Seed (empty = random)", sRandoSeedBuf, sizeof(sRandoSeedBuf));
+    I18n::InputText("Seed (empty = random)", sRandoSeedBuf, sizeof(sRandoSeedBuf));
     RandoUi_HelpTooltip("Decimal numbers are used as-is; any other text is hashed to a "
                         "64-bit seed, so phrases work and are shareable.");
     ImGui::SameLine();
-    if (ImGui::SmallButton("Random")) {
+    if (I18n::SmallButton("Random")) {
         uint64_t r = (uint64_t)ImGui::GetTime() * 0x9E3779B97F4A7C15ull ^ Rando_GetSeed64();
         r ^= r >> 30;
         r *= 0xBF58476D1CE4E5B9ull;
@@ -1289,7 +1289,7 @@ static void DrawRibbonRandomizerTab(void) {
         std::snprintf(sRandoSeedBuf, sizeof(sRandoSeedBuf), "%llu", (unsigned long long)r);
     }
     ImGui::SameLine();
-    if (ImGui::SmallButton("Copy")) {
+    if (I18n::SmallButton("Copy")) {
         ImGui::SetClipboardText(sRandoSeedBuf);
     }
 
@@ -1297,20 +1297,20 @@ static void DrawRibbonRandomizerTab(void) {
     const bool rollInGameplay = Rando_IsInGameplay();
     const bool rollInFileSelect = !rollInGameplay && Rando_IsInFileSelect();
     ImGui::BeginDisabled(rollInGameplay || rollInFileSelect);
-    const bool rolled_normal = ImGui::Button("Roll new seed", ImVec2(150, 0));
+    const bool rolled_normal = I18n::Button("Roll new seed", ImVec2(150, 0));
     ImGui::SameLine();
-    const bool rolled_race = ImGui::Button("Roll race seed", ImVec2(150, 0));
+    const bool rolled_race = I18n::Button("Roll race seed", ImVec2(150, 0));
     if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort)) {
         ImGui::BeginTooltip();
         ImGui::PushTextWrapPos(360.0f);
-        ImGui::TextUnformatted("Rolls a fresh random seed and keeps the spoiler log hidden, "
+        I18n::TextUnformatted("Rolls a fresh random seed and keeps the spoiler log hidden, "
                                "following the usual race convention. Share the seed number with "
                                "the other racers.");
         ImGui::PopTextWrapPos();
         ImGui::EndTooltip();
     }
     ImGui::SameLine();
-    if (ImGui::Button("Reset to vanilla", ImVec2(140, 0))) {
+    if (I18n::Button("Reset to vanilla", ImVec2(140, 0))) {
         Rando_Reset();
         sRandoResult[0] = '\0';
         sRandoSpoiler.clear();
@@ -1320,9 +1320,9 @@ static void DrawRibbonRandomizerTab(void) {
     ImGui::EndDisabled();
     if (rollInGameplay) {
         ImGui::SameLine();
-        ImGui::TextDisabled("(locked during gameplay)");
+        I18n::TextDisabled("(locked during gameplay)");
     } else if (rollInFileSelect) {
-        ImGui::TextDisabled("On the file screen, roll from the L sidebar - it binds the seed to "
+        I18n::TextDisabled("On the file screen, roll from the L sidebar - it binds the seed to "
                             "the new save slot. A roll here would be discarded.");
     }
     if (rolled_normal || rolled_race) {
@@ -1361,9 +1361,9 @@ static void DrawRibbonRandomizerTab(void) {
     if (sRandoResult[0]) {
         ImGui::Spacing();
         if (sRandoResultOk) {
-            ImGui::TextColored(ImVec4(0.4f, 0.85f, 0.4f, 1.0f), "%s", sRandoResult);
+            I18n::TextColored(ImVec4(0.4f, 0.85f, 0.4f, 1.0f), "%s", sRandoResult);
         } else {
-            ImGui::TextColored(ImVec4(0.9f, 0.45f, 0.3f, 1.0f), "%s", sRandoResult);
+            I18n::TextColored(ImVec4(0.9f, 0.45f, 0.3f, 1.0f), "%s", sRandoResult);
         }
     }
 
@@ -1371,23 +1371,23 @@ static void DrawRibbonRandomizerTab(void) {
     if (Rando_IsActive() && !sRandoSpoiler.empty() && sRandoSpoiler[0]) {
         ImGui::Spacing();
         if (sRandoSpoilerHidden) {
-            ImGui::TextDisabled("Spoiler log hidden (race seed).");
+            I18n::TextDisabled("Spoiler log hidden (race seed).");
             ImGui::SameLine();
-            if (ImGui::SmallButton("Reveal anyway"))
+            if (I18n::SmallButton("Reveal anyway"))
                 sRandoSpoilerHidden = false;
-        } else if (ImGui::CollapsingHeader("Spoiler log")) {
-            if (ImGui::SmallButton("Copy to clipboard")) {
+        } else if (I18n::CollapsingHeader("Spoiler log")) {
+            if (I18n::SmallButton("Copy to clipboard")) {
                 ImGui::SetClipboardText(sRandoSpoiler.data());
             }
             ImGui::SameLine();
-            if (ImGui::SmallButton("Save .txt"))
+            if (I18n::SmallButton("Save .txt"))
                 ExportRandoSpoiler();
             ImGui::SameLine();
             sRandoSpoilerFilter.Draw("##spoiler_filter", 180);
             ImGui::SameLine();
-            ImGui::TextDisabled("Filter");
+            I18n::TextDisabled("Filter");
             if (!sRandoSpoilerExportResult.empty()) {
-                ImGui::TextColored(sRandoSpoilerExportOk ? ImVec4(0.4f, 0.85f, 0.4f, 1.0f)
+                I18n::TextColored(sRandoSpoilerExportOk ? ImVec4(0.4f, 0.85f, 0.4f, 1.0f)
                                                         : ImVec4(0.9f, 0.45f, 0.3f, 1.0f),
                                    "%s", sRandoSpoilerExportResult.c_str());
             }
@@ -1403,11 +1403,11 @@ static void DrawRibbonRandomizerTab(void) {
                     std::memcpy(line, p, copy);
                     line[copy] = '\0';
                     if (sRandoSpoilerFilter.PassFilter(line))
-                        ImGui::TextUnformatted(line);
+                        I18n::TextUnformatted(line);
                     p += len + (nl ? 1 : 0);
                 }
             } else {
-                ImGui::TextUnformatted(sRandoSpoiler.data());
+                I18n::TextUnformatted(sRandoSpoiler.data());
             }
             ImGui::EndChild();
         }

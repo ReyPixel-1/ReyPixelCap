@@ -222,8 +222,14 @@ bool Port_Config_GetLcdPersistence(void);
 void Port_Config_SetLcdPersistence(bool on);
 float Port_Config_GetLcdPersistenceRho(void);
 void Port_Config_SetLcdPersistenceRho(float v);
+/* Saved GPU/CRT filter (-1 = nothing saved yet). */
+int Port_Config_GetGpuFilter(void);
+void Port_Config_SetGpuFilter(int f);
 bool Port_Config_GetRibbonEnabled(void);
 void Port_Config_SetRibbonEnabled(bool on);
+/* Menu language (F8 menu only): false = English, true = Spanish. */
+bool Port_Config_GetMenuLangEs(void);
+void Port_Config_SetMenuLangEs(bool on);
 /* One-shot "Press F8 for settings" discovery hint: false until the settings
  * menu is first opened, then persisted true so it never nags again. */
 bool Port_Config_GetMenuHintSeen(void);

@@ -39,6 +39,7 @@ extern "C" int Port_GlslpRuntime_IsActive(void);
 
 #include "port_debug_query.h"
 #include "port_debug_actions.h"
+#include "port_menu_i18n.h"
 #include "port_runtime_config.h" /* PortInput enum (PORT_INPUT_*) */
 #include "item_ids.h"            /* ITEM_* / BOTTLE_CHARM_* enum ids (C++-safe split header) */
 #include <cstring>               /* strcmp — group-header breaks in the item toggle list */
@@ -518,7 +519,7 @@ static void DoQuitToTitle(bool saveFirst) {
 }
 static bool DrawRegionLanguageControls(bool prelaunch) {
     bool regionChanged = false;
-    ImGui::SeparatorText("ROM Region & Language");
+    I18n::SeparatorText("ROM Region & Language");
 
     int preferredRegion = Port_Config_PreferredRegion();
     if (preferredRegion < -1 || preferredRegion > 2)
@@ -532,12 +533,12 @@ static bool DrawRegionLanguageControls(bool prelaunch) {
     };
     int regionIdx = preferredRegion + 1; // map -1..2 to 0..3
     ImGui::SetNextItemWidth(270);
-    if (ImGui::Combo("Preferred ROM", &regionIdx, regionNames, 4)) {
+    if (I18n::Combo("Preferred ROM", &regionIdx, regionNames, 4)) {
         Port_Config_SetPreferredRegion(regionIdx - 1);
         regionChanged = true;
     }
     ImGui::SameLine();
-    ImGui::TextDisabled(prelaunch ? "(used when Play starts)" : "(restart required)");
+    I18n::TextDisabled(prelaunch ? "(used when Play starts)" : "(restart required)");
 
     constexpr int kLanguageCount = 6;
     int preferredLanguage = Port_Config_PreferredLanguage();
@@ -550,7 +551,7 @@ static bool DrawRegionLanguageControls(bool prelaunch) {
     int langIdx = preferredLanguage + 1; // map -1..5 to 0..6
 
     ImGui::SetNextItemWidth(270);
-    if (ImGui::BeginCombo("Language", langNames[langIdx])) {
+    if (I18n::BeginCombo("Language", langNames[langIdx])) {
         for (int i = 0; i < 7; ++i) {
             bool isSupported = true;
             char label[128];
@@ -567,7 +568,7 @@ static bool DrawRegionLanguageControls(bool prelaunch) {
             const bool selected = (i == langIdx);
             if (!isSupported)
                 ImGui::BeginDisabled();
-            if (ImGui::Selectable(label, selected)) {
+            if (I18n::Selectable(label, selected)) {
                 Port_Config_SetPreferredLanguage(i - 1);
                 if (!prelaunch)
                     Port_ApplyLanguage();
@@ -578,7 +579,7 @@ static bool DrawRegionLanguageControls(bool prelaunch) {
         ImGui::EndCombo();
     }
     if (prelaunch) {
-        ImGui::TextDisabled("Language is applied after the selected ROM loads.");
+        I18n::TextDisabled("Language is applied after the selected ROM loads.");
     }
     return regionChanged;
 }
@@ -629,78 +630,78 @@ static void DrawRibbon(void) {
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.55f, 0.20f, 0.20f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.75f, 0.30f, 0.30f, 1.0f));
         ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.85f, 0.35f, 0.35f, 1.0f));
-        if (ImGui::Button("Close X", ImVec2(closeW, 0))) {
+        if (I18n::Button("Close X", ImVec2(closeW, 0))) {
             Port_DebugMenu_Toggle();
         }
         ImGui::PopStyleColor(3);
 
         if (ImGui::BeginTabBar("##ribbonTabs", ImGuiTabBarFlags_None)) {
-            if (ImGui::BeginTabItem("Items")) {
+            if (I18n::BeginTabItem("Items")) {
                 DrawRibbonItemsTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Display")) {
+            if (I18n::BeginTabItem("Display")) {
                 DrawRibbonDisplayTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Saves")) {
+            if (I18n::BeginTabItem("Saves")) {
                 DrawRibbonSavesTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Profiles")) {
+            if (I18n::BeginTabItem("Profiles")) {
                 DrawRibbonProfilesTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Equip")) {
+            if (I18n::BeginTabItem("Equip")) {
                 DrawRibbonEquipTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Controls")) {
+            if (I18n::BeginTabItem("Controls")) {
                 DrawRibbonControlsTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Warp")) {
+            if (I18n::BeginTabItem("Warp")) {
                 DrawRibbonWarpTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Entities")) {
+            if (I18n::BeginTabItem("Entities")) {
                 DrawRibbonEntitiesTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Flags")) {
+            if (I18n::BeginTabItem("Flags")) {
                 DrawRibbonFlagsTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Memory")) {
+            if (I18n::BeginTabItem("Memory")) {
                 DrawRibbonMemoryTab();
                 ImGui::EndTabItem();
             }
-            if ((!Rando_IsInGameplay() || Rando_IsActive()) && ImGui::BeginTabItem("Randomizer")) {
+            if ((!Rando_IsInGameplay() || Rando_IsActive()) && I18n::BeginTabItem("Randomizer")) {
                 DrawRibbonRandomizerTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Audio")) {
+            if (I18n::BeginTabItem("Audio")) {
                 DrawRibbonAudioTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Accessibility")) {
+            if (I18n::BeginTabItem("Accessibility")) {
                 DrawRibbonAccessibilityTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Reborn")) {
+            if (I18n::BeginTabItem("Reborn")) {
                 DrawRibbonRebornTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Practice")) {
+            if (I18n::BeginTabItem("Practice")) {
                 DrawRibbonPracticeTab();
                 ImGui::EndTabItem();
             }
-            if (ImGui::BeginTabItem("Map Editor")) {
+            if (I18n::BeginTabItem("Map Editor")) {
                 DrawRibbonMapEditorTab();
                 ImGui::EndTabItem();
             }
 #ifdef TMC_RA
-            if (ImGui::BeginTabItem("Achievements")) {
+            if (I18n::BeginTabItem("Achievements")) {
                 Port_RA_UI_DrawTab();
                 ImGui::EndTabItem();
             }
@@ -710,13 +711,19 @@ static void DrawRibbon(void) {
         /* Footer with the mode toggle + hotkey hint. */
         ImGui::Separator();
         bool useRibbon = sRibbonEnabled;
-        if (ImGui::Checkbox("Ribbon mode (uncheck for classic menu)", &useRibbon)) {
+        {
+            bool langEs = Port_Config_GetMenuLangEs();
+            if (ImGui::Checkbox("Espa\303\261ol (menu language / idioma del men\303\272)", &langEs)) {
+                Port_Config_SetMenuLangEs(langEs);
+            }
+        }
+        if (I18n::Checkbox("Ribbon mode (uncheck for classic menu)", &useRibbon)) {
             sRibbonEnabled = useRibbon;
             Port_Config_SetRibbonEnabled(useRibbon); /* persist (#146) */
         }
         ImGui::SameLine();
-        ImGui::TextDisabled("(F8 or Select+Start also toggles)");
-        ImGui::TextDisabled("F5/F6 quicksave/load   F9 bug report   -   see the Controls tab for all hotkeys");
+        I18n::TextDisabled("(F8 or Select+Start also toggles)");
+        I18n::TextDisabled("F5/F6 quicksave/load   F9 bug report   -   see the Controls tab for all hotkeys");
     }
     ImGui::End();
     ImGui::PopStyleVar();
@@ -737,7 +744,7 @@ static void DrawToast(const char* text) {
                      ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
                          ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing |
                          ImGuiWindowFlags_NoInputs)) {
-        ImGui::TextUnformatted(text);
+        I18n::TextUnformatted(text);
     }
     ImGui::End();
     ImGui::PopStyleColor();
@@ -772,7 +779,7 @@ static void Practice_DrawHeldGlyphs(unsigned short mask) {
     for (int i = 0; i < kPracticeBtnCount; ++i) {
         bool on = (mask & (unsigned short)(1u << kPracticeBtns[i].bit)) != 0;
         ImVec4 col = on ? ImVec4(0.30f, 0.85f, 0.45f, 1.0f) : ImVec4(0.35f, 0.35f, 0.35f, 1.0f);
-        ImGui::TextColored(col, "%s", kPracticeBtns[i].name);
+        I18n::TextColored(col, "%s", kPracticeBtns[i].name);
         if (i != kPracticeBtnCount - 1)
             ImGui::SameLine();
     }
@@ -862,16 +869,16 @@ static void DrawPracticeOverlay(void) {
         ImGui::SetNextWindowPos(ImVec2(vp.x * 0.5f, pad), ImGuiCond_Always, ImVec2(0.5f, 0.0f));
         if (ImGui::Begin("##practice_timer", nullptr, flags)) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.94f, 0.30f, 1.0f));
-            ImGui::TextUnformatted(buf);
+            I18n::TextUnformatted(buf);
             ImGui::PopStyleColor();
             ImGui::SameLine();
-            ImGui::TextDisabled("(%llu)", (unsigned long long)Port_Practice_ElapsedFrames());
+            I18n::TextDisabled("(%llu)", (unsigned long long)Port_Practice_ElapsedFrames());
             if (Port_Practice_IsPaused()) {
                 ImGui::SameLine();
-                ImGui::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "PAUSED");
+                I18n::TextColored(ImVec4(1.0f, 0.4f, 0.4f, 1.0f), "PAUSED");
             } else if (!Port_Practice_TimerRunning()) {
                 ImGui::SameLine();
-                ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "STOP");
+                I18n::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), "STOP");
             }
         }
         ImGui::End();
@@ -926,7 +933,7 @@ static void DrawMenuPage(int depth) {
                 if (selected) {
                     ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.94f, 0.25f, 1.0f));
                 }
-                if (ImGui::Selectable(label, selected, ImGuiSelectableFlags_AllowDoubleClick)) {
+                if (I18n::Selectable(label, selected, ImGuiSelectableFlags_AllowDoubleClick)) {
                     Port_DebugMenu_PageSetCursor(depth, i);
                     if (ImGui::IsMouseDoubleClicked(0)) {
                         Port_DebugMenu_PageActivate(depth, i);
@@ -952,10 +959,10 @@ static void DrawMenuPage(int depth) {
 
         ImGui::Separator();
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-        ImGui::TextUnformatted("Up/Dn move  Enter activate  L/R cycle  Esc back");
-        ImGui::TextUnformatted("Double-click activate  Right-click cycle");
+        I18n::TextUnformatted("Up/Dn move  Enter activate  L/R cycle  Esc back");
+        I18n::TextUnformatted("Double-click activate  Right-click cycle");
         if (depth == 0)
-            ImGui::TextUnformatted("F5/F6 quicksave/load   F9 bug report   (Controls tab: all keys)");
+            I18n::TextUnformatted("F5/F6 quicksave/load   F9 bug report   (Controls tab: all keys)");
         ImGui::PopStyleColor();
     }
     ImGui::End();
@@ -1020,12 +1027,12 @@ static void DrawMenuTrigger(void) {
          * shape (the default ImGui font doesn't ship U+2261 ≡). First run:
          * spelled-out "Settings (F8)". Open: clear close label. */
         const char* label = open ? " CLOSE MENU " : (showHint ? " Settings  (F8) " : "[=]");
-        if (ImGui::Button(label)) {
+        if (I18n::Button(label)) {
             Port_DebugMenu_Toggle();
         }
         if (open) {
             ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
-            ImGui::TextUnformatted("Gamepad: D-pad nav   A activate   B back");
+            I18n::TextUnformatted("Gamepad: D-pad nav   A activate   B back");
             ImGui::PopStyleColor();
         }
     }
@@ -1067,25 +1074,25 @@ static void DrawQuitModal(void) {
     const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
     ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
     if (ImGui::BeginPopupModal("Quit?", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse)) {
-        ImGui::TextUnformatted("Save before quitting?");
+        I18n::TextUnformatted("Save before quitting?");
         ImGui::Separator();
-        ImGui::TextWrapped("Save & Quit writes the current game state to "
+        I18n::TextWrapped("Save & Quit writes the current game state to "
                            "quicksave slot 0 (F6 to reload). Quit Without "
                            "Saving exits immediately - any progress since "
                            "your last in-game save is lost.");
         ImGui::Spacing();
-        if (ImGui::Button("Save & Quit", ImVec2(140, 0))) {
+        if (I18n::Button("Save & Quit", ImVec2(140, 0))) {
             Port_QuickSave_SaveSlot(0);
             sQuitModalConfirmed = true;
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Quit Without Saving", ImVec2(180, 0))) {
+        if (I18n::Button("Quit Without Saving", ImVec2(180, 0))) {
             sQuitModalConfirmed = true;
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
-        if (ImGui::Button("Cancel", ImVec2(100, 0))) {
+        if (I18n::Button("Cancel", ImVec2(100, 0))) {
             ImGui::CloseCurrentPopup();
         }
         ImGui::EndPopup();
@@ -1117,12 +1124,12 @@ static void DrawRandoFileMenuModal(void) {
                      ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
                          ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings)) {
 
-        ImGui::TextColored(ImVec4(0.78f, 0.95f, 0.78f, 1.0f), "PORT & RANDOMIZER SETUP");
+        I18n::TextColored(ImVec4(0.78f, 0.95f, 0.78f, 1.0f), "PORT & RANDOMIZER SETUP");
         ImGui::Separator();
 
         // Randomizer checkbox (toggle rando vs vanilla)
         bool randoEnabled = Port_RandoFileMenu_GetRandoOptionEnabled();
-        if (ImGui::Checkbox("Enable Randomizer Mode", &randoEnabled)) {
+        if (I18n::Checkbox("Enable Randomizer Mode", &randoEnabled)) {
             Port_RandoFileMenu_SetRandoOptionEnabled(randoEnabled);
         }
         RandoUi_HelpTooltip("On: Starting a new save slot will roll a randomized seed using "
@@ -1133,9 +1140,9 @@ static void DrawRandoFileMenuModal(void) {
 
         // 1. RANDOMIZER SETUP SECTION (Only active if enabled)
         if (randoEnabled) {
-            if (ImGui::CollapsingHeader("Randomizer Setup", ImGuiTreeNodeFlags_DefaultOpen)) {
+            if (I18n::CollapsingHeader("Randomizer Setup", ImGuiTreeNodeFlags_DefaultOpen)) {
                 ImGui::SetNextItemWidth(180);
-                if (ImGui::InputText("Seed (empty = random)", Port_RandoFileMenu_SeedBuffer(),
+                if (I18n::InputText("Seed (empty = random)", Port_RandoFileMenu_SeedBuffer(),
                                      RANDO_FILE_MENU_SEED_MAX + 1, ImGuiInputTextFlags_EnterReturnsTrue)) {
                     Port_RandoFileMenu_SeedEdited();
                     Port_RandoFileMenu_CommitAndStart();
@@ -1143,50 +1150,50 @@ static void DrawRandoFileMenuModal(void) {
                 if (ImGui::IsItemEdited())
                     Port_RandoFileMenu_SeedEdited();
                 ImGui::SameLine();
-                if (ImGui::Button("Randomize"))
+                if (I18n::Button("Randomize"))
                     Port_RandoFileMenu_RandomizeSeed();
 
                 ImGui::Spacing();
-                ImGui::TextDisabled("Logic: default.logic");
+                I18n::TextDisabled("Logic: default.logic");
                 int difficulty = Port_RandoFileMenu_Difficulty();
                 ImGui::SetNextItemWidth(160);
-                if (ImGui::Combo("Item pool", &difficulty, kRandoPoolCombo, RANDO_ITEM_POOL_COUNT)) {
+                if (I18n::Combo("Item pool", &difficulty, kRandoPoolCombo, RANDO_ITEM_POOL_COUNT)) {
                     Port_RandoFileMenu_SetDifficulty(difficulty);
                 }
                 RandoUi_HelpTooltip(kRandoPoolTooltip);
-                ImGui::Checkbox("Glitchless logic", Port_RandoFileMenu_GlitchlessLogic());
+                I18n::Checkbox("Glitchless logic", Port_RandoFileMenu_GlitchlessLogic());
                 ImGui::SameLine();
-                ImGui::Checkbox("Obscure spots", Port_RandoFileMenu_ObscureLocations());
+                I18n::Checkbox("Obscure spots", Port_RandoFileMenu_ObscureLocations());
                 ImGui::SameLine();
-                ImGui::Checkbox("Kinstones", Port_RandoFileMenu_ShuffleKinstones());
+                I18n::Checkbox("Kinstones", Port_RandoFileMenu_ShuffleKinstones());
                 ImGui::SameLine();
-                ImGui::Checkbox("Entrances", Port_RandoFileMenu_ShuffleEntrances());
+                I18n::Checkbox("Entrances", Port_RandoFileMenu_ShuffleEntrances());
                 ImGui::SameLine();
-                ImGui::Checkbox("Dojos", Port_RandoFileMenu_ShuffleDojos());
-                ImGui::Checkbox("Dungeon items", Port_RandoFileMenu_ShuffleDungeonItems());
+                I18n::Checkbox("Dojos", Port_RandoFileMenu_ShuffleDojos());
+                I18n::Checkbox("Dungeon items", Port_RandoFileMenu_ShuffleDungeonItems());
                 RandoUi_HelpTooltip("Off: dungeon items stay in their own dungeons. On: "
                                     "keys, maps, compasses and big keys can appear anywhere.");
-                ImGui::Checkbox("Open world", Port_RandoFileMenu_OpenWorld());
+                I18n::Checkbox("Open world", Port_RandoFileMenu_OpenWorld());
                 RandoUi_HelpTooltip("Every permanent obstacle (trees, cracked blocks, bomb "
                                     "walls, switches, non-key doors, ...) starts pre-solved, "
                                     "matching the GBA randomizer's World Settings \"Open\".");
                 ImGui::SameLine();
-                ImGui::Checkbox("Sleep warp", Port_RandoFileMenu_Homewarp());
-                ImGui::Checkbox("Start Sword", Port_RandoFileMenu_StartSword());
+                I18n::Checkbox("Sleep warp", Port_RandoFileMenu_Homewarp());
+                I18n::Checkbox("Start Sword", Port_RandoFileMenu_StartSword());
                 ImGui::SameLine();
-                ImGui::Checkbox("Early Crests", Port_RandoFileMenu_EarlyCrests());
+                I18n::Checkbox("Early Crests", Port_RandoFileMenu_EarlyCrests());
                 ImGui::SameLine();
-                ImGui::Checkbox("Fast Text", Port_RandoFileMenu_InstantText());
+                I18n::Checkbox("Fast Text", Port_RandoFileMenu_InstantText());
 
                 static const char* kTunicColors[] = { "Green", "Red", "Blue", "Purple", "Orange", "Grey", "Random" };
                 static const char* kHeartColors[] = { "Red", "Blue", "Green", "Yellow", "Purple", "Rainbow", "Random" };
                 ImGui::SetNextItemWidth(160);
-                ImGui::Combo("Tunic color", Port_RandoFileMenu_TunicColor(), kTunicColors, 7);
+                I18n::Combo("Tunic color", Port_RandoFileMenu_TunicColor(), kTunicColors, 7);
                 ImGui::SetNextItemWidth(160);
-                ImGui::Combo("Heart color", Port_RandoFileMenu_HeartColor(), kHeartColors, 7);
+                I18n::Combo("Heart color", Port_RandoFileMenu_HeartColor(), kHeartColors, 7);
 
                 ImGui::SetNextItemWidth(160);
-                ImGui::Combo("Accessibility", Port_RandoFileMenu_Accessibility(), kRandoAccessCombo,
+                I18n::Combo("Accessibility", Port_RandoFileMenu_Accessibility(), kRandoAccessCombo,
                              RANDO_ACCESS_COUNT);
                 RandoUi_HelpTooltip(kRandoAccessTooltip);
                 if (!*Port_RandoFileMenu_GlitchlessLogic()) {
@@ -1199,16 +1206,16 @@ static void DrawRandoFileMenuModal(void) {
                 ImGui::Spacing();
                 const char* status = Port_RandoFileMenu_Status();
                 if (status[0]) {
-                    ImGui::TextColored(ImVec4(1.0f, 0.44f, 0.44f, 1.0f), "%s", status);
+                    I18n::TextColored(ImVec4(1.0f, 0.44f, 0.44f, 1.0f), "%s", status);
                 }
 
                 {
                     char sfp[16];
                     std::snprintf(sfp, sizeof(sfp), "%08X", Port_RandoFileMenu_Fingerprint());
-                    ImGui::Text("Menu settings hash: %s", sfp);
+                    I18n::Text("Menu settings hash: %s", sfp);
                     RandoUi_HelpTooltip("The exact logic fingerprint appears after generation.");
                     ImGui::SameLine();
-                    if (ImGui::SmallButton("Copy##fpsidebar")) {
+                    if (I18n::SmallButton("Copy##fpsidebar")) {
                         ImGui::SetClipboardText(sfp);
                     }
                 }
@@ -1217,33 +1224,33 @@ static void DrawRandoFileMenuModal(void) {
                     /* Only show Generate/Cancel actions when the GBA state is actively
                      * waiting for input on a new file creation slot. */
                     const float actionW = (sidebarW - 32.0f) / 2.0f;
-                    if (ImGui::Button("Generate & Start", ImVec2(actionW, 0))) {
+                    if (I18n::Button("Generate & Start", ImVec2(actionW, 0))) {
                         Port_RandoFileMenu_CommitAndStart();
                     }
                     ImGui::SameLine();
-                    if (ImGui::Button("Cancel", ImVec2(actionW, 0))) {
+                    if (I18n::Button("Cancel", ImVec2(actionW, 0))) {
                         Port_RandoFileMenu_Cancel();
                     }
-                    ImGui::TextDisabled("Enter starts   Esc / Gamepad B cancels");
+                    I18n::TextDisabled("Enter starts   Esc / Gamepad B cancels");
                 } else {
-                    ImGui::TextDisabled("Select an empty save slot to generate and start.");
+                    I18n::TextDisabled("Select an empty save slot to generate and start.");
                 }
             }
         } else {
-            ImGui::TextDisabled("Randomizer: disabled (Vanilla game).");
+            I18n::TextDisabled("Randomizer: disabled (Vanilla game).");
         }
 
         // 2. GENERAL PORT SETTINGS (Always available)
-        if (ImGui::CollapsingHeader("Display & Video")) {
+        if (I18n::CollapsingHeader("Display & Video")) {
             DrawRibbonDisplayTab();
         }
-        if (ImGui::CollapsingHeader("Audio & Sound")) {
+        if (I18n::CollapsingHeader("Audio & Sound")) {
             DrawRibbonAudioTab();
         }
-        if (ImGui::CollapsingHeader("Save Profiles")) {
+        if (I18n::CollapsingHeader("Save Profiles")) {
             DrawRibbonProfilesTab();
         }
-        if (ImGui::CollapsingHeader("Accessibility")) {
+        if (I18n::CollapsingHeader("Accessibility")) {
             DrawRibbonAccessibilityTab();
         }
 
@@ -1274,7 +1281,7 @@ static void DrawRandoFileMenuModal(void) {
             }
         } else {
             /* Close button for the sidebar when opened manually */
-            if (ImGui::Button("Close Sidebar", ImVec2(-1, 30))) {
+            if (I18n::Button("Close Sidebar", ImVec2(-1, 30))) {
                 Port_RandoFileMenu_SetSidebarOpen(false);
                 Rando_PlayCancelSfx();
             }
@@ -1360,17 +1367,17 @@ extern "C" bool Port_ImGui_Render(void) {
         if (ImGui::Begin("##softslot_config", nullptr,
                          ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse |
                              ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoSavedSettings)) {
-            ImGui::TextColored(ImVec4(0.78f, 0.86f, 1.0f, 1.0f), "EXTRA EQUIP SLOTS");
+            I18n::TextColored(ImVec4(0.78f, 0.86f, 1.0f, 1.0f), "EXTRA EQUIP SLOTS");
             ImGui::Separator();
             for (int s = 0; s < 4; ++s) {
                 ImGui::PushID(s);
-                ImGui::Text("%s", Port_SoftSlots_GetSlotLabel(s));
+                I18n::Text("%s", Port_SoftSlots_GetSlotLabel(s));
                 ImGui::SameLine(260.0f);
                 DrawSoftSlotCycleButtons(s);
                 ImGui::PopID();
             }
             ImGui::Separator();
-            ImGui::TextDisabled("Up/Down pick   Left/Right cycle   Enter/Esc done");
+            I18n::TextDisabled("Up/Down pick   Left/Right cycle   Enter/Esc done");
             if (ImGui::IsKeyPressed(ImGuiKey_Escape) || ImGui::IsKeyPressed(ImGuiKey_Enter)) {
                 Port_SoftSlots_ConfigClose();
             }
@@ -1395,7 +1402,7 @@ extern "C" bool Port_ImGui_Render(void) {
         if (ImGui::Begin("##rando_l_hint", nullptr,
                          ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoNav |
                              ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize)) {
-            ImGui::TextColored(ImVec4(0.85f, 0.95f, 0.85f, 1.0f), "Press  L  for Port & Randomizer setup");
+            I18n::TextColored(ImVec4(0.85f, 0.95f, 0.85f, 1.0f), "Press  L  for Port & Randomizer setup");
         }
         ImGui::End();
     }
@@ -1429,7 +1436,7 @@ extern "C" bool Port_ImGui_Render(void) {
             if (ImGui::Begin("##classic_to_ribbon", nullptr,
                              ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_AlwaysAutoResize |
                                  ImGuiWindowFlags_NoSavedSettings)) {
-                if (ImGui::SmallButton("Switch to ribbon mode")) {
+                if (I18n::SmallButton("Switch to ribbon mode")) {
                     sRibbonEnabled = true;
                     Port_Config_SetRibbonEnabled(true); /* persist (#146) */
                 }
@@ -1547,7 +1554,7 @@ extern "C" bool Port_ImGui_RenderExtractProgress(const char* phase, float fracti
                          ImGuiWindowFlags_NoScrollbar)) {
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.40f, 0.72f, 0.46f, 1.00f));
         ImGui::SetWindowFontScale(1.6f);
-        ImGui::TextUnformatted("Extracting game assets");
+        I18n::TextUnformatted("Extracting game assets");
         ImGui::SetWindowFontScale(1.0f);
         ImGui::PopStyleColor();
 
@@ -1557,12 +1564,12 @@ extern "C" bool Port_ImGui_RenderExtractProgress(const char* phase, float fracti
         ImGui::Dummy(ImVec2(0, 4));
 
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.70f, 0.78f, 0.70f, 1.00f));
-        ImGui::Text("loading %s   (phase %d/%d)", (phase && phase[0]) ? phase : "preparing", phase_index, phase_total);
+        I18n::Text("loading %s   (phase %d/%d)", (phase && phase[0]) ? phase : "preparing", phase_index, phase_total);
         ImGui::PopStyleColor();
 #ifdef __ANDROID__
-        ImGui::TextDisabled("One-time setup - this can take a minute on first launch.");
+        I18n::TextDisabled("One-time setup - this can take a minute on first launch.");
 #else
-        ImGui::TextDisabled("One-time first-launch extraction. See terminal for detail.");
+        I18n::TextDisabled("One-time first-launch extraction. See terminal for detail.");
 #endif
     }
     ImGui::End();
@@ -1575,7 +1582,7 @@ extern "C" bool Port_ImGui_RenderExtractProgress(const char* phase, float fracti
 /* Horizontally center a single line of text in the current window. */
 static void CenteredText(const char* t) {
     ImGui::SetCursorPosX((ImGui::GetWindowSize().x - ImGui::CalcTextSize(t).x) * 0.5f);
-    ImGui::TextUnformatted(t);
+    I18n::TextUnformatted(t);
 }
 
 extern "C" bool Port_ImGui_RenderPrelaunch(bool rom_present, const char* version, const char* rom_name, bool* out_play,
@@ -1645,16 +1652,16 @@ extern "C" bool Port_ImGui_RenderPrelaunch(bool rom_present, const char* version
 
         if (rom_present) {
             ImGui::PushStyleColor(ImGuiCol_Text, subtxt);
-            ImGui::TextUnformatted("Version");
+            I18n::TextUnformatted("Version");
             ImGui::PopStyleColor();
             ImGui::SameLine(170.0f);
-            ImGui::TextUnformatted(version ? version : "?");
+            I18n::TextUnformatted(version ? version : "?");
 
             ImGui::PushStyleColor(ImGuiCol_Text, subtxt);
-            ImGui::TextUnformatted("ROM");
+            I18n::TextUnformatted("ROM");
             ImGui::PopStyleColor();
             ImGui::SameLine(170.0f);
-            ImGui::TextUnformatted(rom_name ? rom_name : "?");
+            I18n::TextUnformatted(rom_name ? rom_name : "?");
             ImGui::SameLine();
             /* Right-align the Change-ROM button to the edge of the card. */
             {
@@ -1662,7 +1669,7 @@ extern "C" bool Port_ImGui_RenderPrelaunch(bool rom_present, const char* version
                 float bw = ImGui::CalcTextSize(lbl).x + ImGui::GetStyle().FramePadding.x * 2.0f;
                 float pad = ImGui::GetStyle().WindowPadding.x;
                 ImGui::SameLine(win_w - pad - bw);
-                if (ImGui::Button(lbl)) {
+                if (I18n::Button(lbl)) {
                     if (out_change_rom)
                         *out_change_rom = true;
                 }
@@ -1694,7 +1701,7 @@ extern "C" bool Port_ImGui_RenderPrelaunch(bool rom_present, const char* version
             ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.40f, 0.72f, 0.46f, 1.0f));
             ImGui::SetCursorPosX((win_w - sz.x) * 0.5f);
             ImGui::SetWindowFontScale(1.4f);
-            const bool clicked = ImGui::Button(lbl, sz) || ImGui::IsKeyPressed(ImGuiKey_Enter) ||
+            const bool clicked = I18n::Button(lbl, sz) || ImGui::IsKeyPressed(ImGuiKey_Enter) ||
                                  ImGui::IsKeyPressed(ImGuiKey_KeypadEnter) || ImGui::IsKeyPressed(ImGuiKey_Space);
             if (clicked) {
                 if (is_select) {

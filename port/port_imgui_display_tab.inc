@@ -12,33 +12,33 @@ static void StepperRow(const char* label, const char* id,
                        PortStepValue getValue, PortStepCycle onCycle) {
     char tag[24];
     ImGui::TableNextRow();
-    ImGui::TableSetColumnIndex(0); ImGui::Text("%s", label);
+    ImGui::TableSetColumnIndex(0); I18n::Text("%s", label);
     ImGui::TableSetColumnIndex(1);
     std::snprintf(tag, sizeof(tag), "<##%s", id);
-    if (ImGui::Button(tag)) onCycle(-1);
+    if (I18n::Button(tag)) onCycle(-1);
     ImGui::SameLine();
     char buf[24];
-    ImGui::Text("%s", getValue(buf, sizeof(buf)));
+    I18n::Text("%s", getValue(buf, sizeof(buf)));
     ImGui::SameLine();
     std::snprintf(tag, sizeof(tag), ">##%s", id);
-    if (ImGui::Button(tag)) onCycle(+1);
+    if (I18n::Button(tag)) onCycle(+1);
 }
 
 static void DrawRibbonDisplayTab(void) {
     const bool gpuActive = Port_GPU_IsActive();
 
     if (ImGui::BeginTable("##display_settings_table", 2, ImGuiTableFlags_SizingFixedFit)) {
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
-        ImGui::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 150.0f);
+        I18n::TableSetupColumn("Value", ImGuiTableColumnFlags_WidthStretch);
 
         // Window scale - value captured before the buttons (read-before).
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("Window scale");
+        ImGui::TableSetColumnIndex(0); I18n::Text("Window scale");
         ImGui::TableSetColumnIndex(1);
         int scale = (int)Port_PPU_WindowScale();
-        if (ImGui::Button("<##scale")) Port_PPU_CycleWindowScale(-1);
-        ImGui::SameLine(); ImGui::Text("%dx", scale); ImGui::SameLine();
-        if (ImGui::Button(">##scale")) Port_PPU_CycleWindowScale(+1);
+        if (I18n::Button("<##scale")) Port_PPU_CycleWindowScale(-1);
+        ImGui::SameLine(); I18n::Text("%dx", scale); ImGui::SameLine();
+        if (I18n::Button(">##scale")) Port_PPU_CycleWindowScale(+1);
 
         StepperRow("Filter", "filter",
                    [](char*, size_t) { return Port_PPU_PresentationModeName(); },
@@ -62,11 +62,11 @@ static void DrawRibbonDisplayTab(void) {
         /* Decoupled pacing: game logic on a fixed tick grid, presents on the
          * Target FPS grid (port_bios.c). Off = legacy coupled loop. */
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("Decouple game speed");
+        ImGui::TableSetColumnIndex(0); I18n::Text("Decouple game speed");
         ImGui::TableSetColumnIndex(1);
         {
             bool dec = Port_Config_GetDecoupleRender();
-            if (ImGui::Checkbox("##decouple_render", &dec)) {
+            if (I18n::Checkbox("##decouple_render", &dec)) {
                 Port_Config_SetDecoupleRender(dec);
             }
         }
@@ -78,11 +78,11 @@ static void DrawRibbonDisplayTab(void) {
 
         /* On-screen FPS/TPS counter (DrawFpsOverlay, port_imgui_menu.cpp). */
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("Show FPS counter");
+        ImGui::TableSetColumnIndex(0); I18n::Text("Show FPS counter");
         ImGui::TableSetColumnIndex(1);
         {
             bool sf = Port_Config_GetShowFps();
-            if (ImGui::Checkbox("##show_fps", &sf)) {
+            if (I18n::Checkbox("##show_fps", &sf)) {
                 Port_Config_SetShowFps(sf);
             }
         }
@@ -95,11 +95,11 @@ static void DrawRibbonDisplayTab(void) {
 
         /* Experimental 3D room view (port_voxel.cpp; SDL_GPU/Vulkan only). */
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("3D view (experimental)");
+        ImGui::TableSetColumnIndex(0); I18n::Text("3D view (experimental)");
         ImGui::TableSetColumnIndex(1);
         {
             bool vv = Port_Config_GetVoxelView();
-            if (ImGui::Checkbox("##voxel_view", &vv)) {
+            if (I18n::Checkbox("##voxel_view", &vv)) {
                 Port_Config_SetVoxelView(vv);
             }
         }
@@ -119,30 +119,30 @@ static void DrawRibbonDisplayTab(void) {
                        },
                        Port_Config_CycleVoxelPitch);
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("3D wall height");
+            ImGui::TableSetColumnIndex(0); I18n::Text("3D wall height");
             ImGui::TableSetColumnIndex(1);
             {
                 const int wt = Port_Voxel_AreaWallTiles(voxArea);
-                if (ImGui::Button("<##voxwall")) Port_Voxel_SetAreaWallTiles(voxArea, wt - 1);
-                ImGui::SameLine(); ImGui::Text("%d tiles (area 0x%02X)", wt, voxArea); ImGui::SameLine();
-                if (ImGui::Button(">##voxwall")) Port_Voxel_SetAreaWallTiles(voxArea, wt + 1);
+                if (I18n::Button("<##voxwall")) Port_Voxel_SetAreaWallTiles(voxArea, wt - 1);
+                ImGui::SameLine(); I18n::Text("%d tiles (area 0x%02X)", wt, voxArea); ImGui::SameLine();
+                if (I18n::Button(">##voxwall")) Port_Voxel_SetAreaWallTiles(voxArea, wt + 1);
             }
             RandoUi_HelpTooltip("How many tile rows of each wall/cliff stand up vertically in this area.");
 
             const PortVoxelTileAhead ta = Port_Voxel_TileAhead();
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("3D tile ahead");
+            ImGui::TableSetColumnIndex(0); I18n::Text("3D tile ahead");
             ImGui::TableSetColumnIndex(1);
             if (ta.valid) {
-                ImGui::Text("type 0x%03X", ta.tileType);
+                I18n::Text("type 0x%03X", ta.tileType);
                 static const char* kShapeNames[] = { "Auto", "Floor", "Block", "Prop" };
                 for (int s = 0; s < 4; ++s) {
                     ImGui::SameLine();
-                    if (ImGui::RadioButton(kShapeNames[s], ta.shape == s))
+                    if (I18n::RadioButton(kShapeNames[s], ta.shape == s))
                         Port_Voxel_SetTileShape(ta.area, ta.tileType, s);
                 }
             } else {
-                ImGui::TextDisabled("(none)");
+                I18n::TextDisabled("(none)");
             }
             RandoUi_HelpTooltip("Shape of the tile Link is facing, for every tile of that type in this area. "
                                 "Auto = guess from collision; Floor = always flat; Block = always a wall; "
@@ -169,23 +169,23 @@ static void DrawRibbonDisplayTab(void) {
         StepperRow("Renderer", "renderer",
                    [](char*, size_t) { return Port_Config_RenderBackendName(Port_Config_RenderBackend()); },
                    Port_Config_CycleRenderBackend);
-        ImGui::SameLine(); ImGui::TextDisabled("(restart)");
+        ImGui::SameLine(); I18n::TextDisabled("(restart)");
 
         /* GPU PPU rasterizer toggle (docs/gpu-rasterizer-design.md). Only
          * meaningful on the SDL_GPU backend; the CPU rasterizer is the
          * automatic fallback. Shown greyed-out otherwise. */
         ImGui::TableNextRow();
-        ImGui::TableSetColumnIndex(0); ImGui::Text("GPU rasterizer");
+        ImGui::TableSetColumnIndex(0); I18n::Text("GPU rasterizer");
         ImGui::TableSetColumnIndex(1);
         {
             bool raster = Port_Config_GetGpuRaster();
             ImGui::BeginDisabled(!gpuActive);
-            if (ImGui::Checkbox("##gpu_raster", &raster)) {
+            if (I18n::Checkbox("##gpu_raster", &raster)) {
                 Port_Config_SetGpuRaster(raster);
             }
             ImGui::EndDisabled();
             ImGui::SameLine();
-            ImGui::TextDisabled(gpuActive ? "(CPU fallback)" : "(needs GPU backend)");
+            I18n::TextDisabled(gpuActive ? "(CPU fallback)" : "(needs GPU backend)");
         }
 
         /* GLES compute rasterizer — opt-in fallback for devices without Vulkan.
@@ -193,14 +193,14 @@ static void DrawRibbonDisplayTab(void) {
          * only relevant when the SDL_GPU (Vulkan) backend is NOT active. */
         if (!gpuActive) {
             ImGui::TableNextRow();
-            ImGui::TableSetColumnIndex(0); ImGui::Text("GLES raster (exp.)");
+            ImGui::TableSetColumnIndex(0); I18n::Text("GLES raster (exp.)");
             ImGui::TableSetColumnIndex(1);
             bool gles = Port_Config_GetGpuRasterGles();
-            if (ImGui::Checkbox("##gpu_raster_gles", &gles)) {
+            if (I18n::Checkbox("##gpu_raster_gles", &gles)) {
                 Port_Config_SetGpuRasterGles(gles);
             }
             ImGui::SameLine();
-            ImGui::TextDisabled("(often slower than CPU)");
+            I18n::TextDisabled("(often slower than CPU)");
         }
 
         StepperRow("Background", "bgfill",
@@ -221,15 +221,15 @@ static void DrawRibbonDisplayTab(void) {
         bool changed = false;
         ImGui::Indent(150.0f);
         ImGui::PushItemWidth(120.0f);
-        if (ImGui::SliderInt("R##bgcol_r", &rgb[0], 0, 255)) {
+        if (I18n::SliderInt("R##bgcol_r", &rgb[0], 0, 255)) {
             changed = true;
         }
         ImGui::SameLine();
-        if (ImGui::SliderInt("G##bgcol_g", &rgb[1], 0, 255)) {
+        if (I18n::SliderInt("G##bgcol_g", &rgb[1], 0, 255)) {
             changed = true;
         }
         ImGui::SameLine();
-        if (ImGui::SliderInt("B##bgcol_b", &rgb[2], 0, 255)) {
+        if (I18n::SliderInt("B##bgcol_b", &rgb[2], 0, 255)) {
             changed = true;
         }
         ImGui::PopItemWidth();
@@ -248,7 +248,7 @@ static void DrawRibbonDisplayTab(void) {
     const bool glslpSupported = gpuActive && Port_GPU_SupportsGlslpRuntime();
     if (!glslpSupported) {
         ImGui::Indent(150.0f);
-        ImGui::TextDisabled("Shader preset: %s", gpuActive ? "(SPIR-V backend required)" : "(GPU backend required)");
+        I18n::TextDisabled("Shader preset: %s", gpuActive ? "(SPIR-V backend required)" : "(GPU backend required)");
         ImGui::Unindent(150.0f);
     } else {
         static std::vector<std::string> sPresetPaths;
@@ -301,21 +301,21 @@ static void DrawRibbonDisplayTab(void) {
         }
 
         ImGui::Indent(150.0f);
-        ImGui::TextUnformatted("Shader preset"); ImGui::SameLine();
-        if (ImGui::Button("Off##preset")) {
+        I18n::TextUnformatted("Shader preset"); ImGui::SameLine();
+        if (I18n::Button("Off##preset")) {
             Port_GlslpRuntime_Unload();
             sActivePreset.clear();
             Port_Config_SetShaderPreset("");                  /* persist (#146) */
             Port_DebugMenu_ToastFromExternal("Shader preset off");
         }
         ImGui::SameLine();
-        if (ImGui::Button("Rescan##preset")) refresh();
+        if (I18n::Button("Rescan##preset")) refresh();
         ImGui::SameLine();
-        ImGui::TextDisabled("(%zu found)", sPresetPaths.size());
+        I18n::TextDisabled("(%zu found)", sPresetPaths.size());
 
         const bool active = Port_GlslpRuntime_IsActive() != 0;
         if (active && !sActivePreset.empty()) {
-            ImGui::TextDisabled("  active: %s", sActivePreset.c_str());
+            I18n::TextDisabled("  active: %s", sActivePreset.c_str());
         }
 
         if (!sPresetPaths.empty()) {
@@ -326,7 +326,7 @@ static void DrawRibbonDisplayTab(void) {
                                     && Port_GlslpRuntime_IsActive();
                     std::string label = std::filesystem::path(sPresetPaths[i]).filename().string();
                     label += "    "; label += sPresetPaths[i];
-                    if (ImGui::Selectable(label.c_str(), selected)) {
+                    if (I18n::Selectable(label.c_str(), selected)) {
                         if (selected) {
                             Port_GlslpRuntime_Unload();
                             sActivePreset.clear();
@@ -354,42 +354,42 @@ static void DrawRibbonDisplayTab(void) {
         bool ws = Port_Config_WidescreenEnabled();
         bool parity = Port_Config_GetConsoleParity();
         ImGui::BeginDisabled(parity);
-        if (ImGui::Checkbox("Widescreen (WIP)", &ws)) {
+        if (I18n::Checkbox("Widescreen (WIP)", &ws)) {
             Port_Config_SetWidescreenEnabled(ws);
             Port_PPU_ApplyWindowScale();
             Port_DebugMenu_ToastFromExternal(ws ? "Widescreen enabled" : "Widescreen disabled");
         }
         ImGui::EndDisabled();
         if (parity && ImGui::IsItemHovered(ImGuiHoveredFlags_AllowWhenDisabled)) {
-            ImGui::SetTooltip("Console-Parity mode requires the original screen width. Turn it off to enable widescreen.");
+            I18n::SetTooltip("Console-Parity mode requires the original screen width. Turn it off to enable widescreen.");
         }
         ImGui::SameLine();
     }
 #endif
 
     bool fs = Port_PPU_IsFullscreen();
-    if (ImGui::Checkbox("Fullscreen", &fs)) {
+    if (I18n::Checkbox("Fullscreen", &fs)) {
         Port_PPU_ToggleFullscreen();
         Port_Config_SetFullscreen(Port_PPU_IsFullscreen());   /* persist (#146) */
     }
     ImGui::SameLine();
 
     bool hideCur = Port_Config_GetFullscreenHideCursor();
-    if (ImGui::Checkbox("Hide cursor in fullscreen", &hideCur)) {
+    if (I18n::Checkbox("Hide cursor in fullscreen", &hideCur)) {
         Port_Config_SetFullscreenHideCursor(hideCur);         /* persist */
         Port_PPU_ApplyCursorVisibility();                     /* live, if already fullscreen */
     }
     ImGui::SameLine();
 
     bool vsync = Port_PPU_VSyncEnabled();
-    if (ImGui::Checkbox("VSync", &vsync)) {
+    if (I18n::Checkbox("VSync", &vsync)) {
         Port_PPU_SetVSync(vsync);
         Port_Config_SetVSync(vsync);                          /* persist (#146) */
     }
     ImGui::SameLine();
 
     bool drp = Port_DiscordRpc_IsEnabled();
-    if (ImGui::Checkbox("Discord RPC", &drp)) {
+    if (I18n::Checkbox("Discord RPC", &drp)) {
         Port_DiscordRpc_SetEnabled(drp);
         Port_Config_SetDiscordRpc(drp);                       /* persist (#146) */
     }
@@ -402,7 +402,7 @@ static void DrawRibbonDisplayTab(void) {
         "Windows (the named-pipe IPC client is not yet implemented).");
 
     bool colourCorrect = Port_PPU_ColorCorrectionEnabled();
-    if (ImGui::Checkbox("GBA colour correction", &colourCorrect)) {
+    if (I18n::Checkbox("GBA colour correction", &colourCorrect)) {
         Port_PPU_SetColorCorrection(colourCorrect);           /* live */
         Port_Config_SetColorCorrection(colourCorrect);        /* persist */
     }
@@ -412,7 +412,7 @@ static void DrawRibbonDisplayTab(void) {
         "looking over-bright on a modern sRGB display. Default on.");
 
     bool lcdPersist = Port_Config_GetLcdPersistence();
-    if (ImGui::Checkbox("LCD persistence", &lcdPersist)) {
+    if (I18n::Checkbox("LCD persistence", &lcdPersist)) {
         Port_Config_SetLcdPersistence(lcdPersist);            /* persist */
         Port_PPU_SetPersistence(lcdPersist, Port_Config_GetLcdPersistenceRho());
     }
@@ -423,14 +423,14 @@ static void DrawRibbonDisplayTab(void) {
     if (lcdPersist) {
         float rho = Port_Config_GetLcdPersistenceRho();
         ImGui::SetNextItemWidth(160.0f);
-        if (ImGui::SliderFloat("Persistence strength", &rho, 0.0f, 0.95f, "%.2f")) {
+        if (I18n::SliderFloat("Persistence strength", &rho, 0.0f, 0.95f, "%.2f")) {
             Port_Config_SetLcdPersistenceRho(rho);            /* persist */
             Port_PPU_SetPersistence(true, rho);               /* live */
         }
     }
 
     bool holdAdv = Port_Config_GetHoldToAdvanceText();
-    if (ImGui::Checkbox("Hold to advance text", &holdAdv)) {
+    if (I18n::Checkbox("Hold to advance text", &holdAdv)) {
         Port_Config_SetHoldToAdvanceText(holdAdv);
     }
     RandoUi_HelpTooltip(

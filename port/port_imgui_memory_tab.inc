@@ -6,9 +6,9 @@
  * rather than faulting. Session-only — watches are intentionally not persisted
  * (a stale address from a previous build would be misleading). */
 static void DrawRibbonMemoryTab(void) {
-    ImGui::TextUnformatted("Watch arbitrary GBA memory live: EWRAM 0x02xxxxxx, IWRAM 0x03xxxxxx, "
+    I18n::TextUnformatted("Watch arbitrary GBA memory live: EWRAM 0x02xxxxxx, IWRAM 0x03xxxxxx, "
                            "I/O 0x04xxxxxx, palette 0x05xxxxxx, VRAM 0x06xxxxxx, OAM 0x07xxxxxx, ROM 0x08xxxxxx.");
-    ImGui::TextDisabled("Session-only: watches are not saved to config.");
+    I18n::TextDisabled("Session-only: watches are not saved to config.");
     ImGui::Separator();
 
     static char sAddrBuf[16] = "03000000";
@@ -16,33 +16,33 @@ static void DrawRibbonMemoryTab(void) {
     static const char* const kWidthNames[3] = { "u8", "u16", "u32" };
 
     ImGui::SetNextItemWidth(110);
-    ImGui::InputText("##memaddr", sAddrBuf, sizeof(sAddrBuf),
+    I18n::InputText("##memaddr", sAddrBuf, sizeof(sAddrBuf),
                      ImGuiInputTextFlags_CharsHexadecimal | ImGuiInputTextFlags_CharsUppercase);
     ImGui::SameLine();
     ImGui::SetNextItemWidth(64);
-    ImGui::Combo("##memwidth", &sWidth, kWidthNames, 3);
+    I18n::Combo("##memwidth", &sWidth, kWidthNames, 3);
     ImGui::SameLine();
 
     const unsigned int candAddr = (unsigned int)strtoul(sAddrBuf, nullptr, 16);
     unsigned int candVal = 0;
     const int candOk = Port_DebugQuery_MemRead(candAddr, sWidth, &candVal);
-    if (ImGui::Button("Add watch")) {
+    if (I18n::Button("Add watch")) {
         if (Port_DebugAction_MemWatchAdd(candAddr, sWidth) < 0) {
             Port_DebugMenu_ToastFromExternal("Watch list full (32 max)");
         }
     }
     ImGui::SameLine();
     if (candOk) {
-        ImGui::Text("= 0x%0*X  (%u)", (1 << sWidth) * 2, candVal, candVal);
+        I18n::Text("= 0x%0*X  (%u)", (1 << sWidth) * 2, candVal, candVal);
     } else {
-        ImGui::TextDisabled("= <unmapped>");
+        I18n::TextDisabled("= <unmapped>");
     }
 
     ImGui::Separator();
     const int n = Port_DebugQuery_MemWatchCount();
-    ImGui::Text("Watches: %d / 32", n);
+    I18n::Text("Watches: %d / 32", n);
     ImGui::SameLine();
-    if (ImGui::SmallButton("Clear all"))
+    if (I18n::SmallButton("Clear all"))
         Port_DebugAction_MemWatchClear();
 
     if (ImGui::BeginTable("##memwatch", 4,
@@ -50,10 +50,10 @@ static void DrawRibbonMemoryTab(void) {
                               ImGuiTableFlags_SizingFixedFit,
                           ImVec2(0, 280))) {
         ImGui::TableSetupScrollFreeze(0, 1);
-        ImGui::TableSetupColumn("Address");
-        ImGui::TableSetupColumn("Width");
-        ImGui::TableSetupColumn("Value");
-        ImGui::TableSetupColumn("");
+        I18n::TableSetupColumn("Address");
+        I18n::TableSetupColumn("Width");
+        I18n::TableSetupColumn("Value");
+        I18n::TableSetupColumn("");
         ImGui::TableHeadersRow();
         int removeIdx = -1;
         for (int i = 0; i < n; ++i) {
@@ -64,16 +64,16 @@ static void DrawRibbonMemoryTab(void) {
             ImGui::PushID(i);
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::Text("0x%08X", a);
+            I18n::Text("0x%08X", a);
             ImGui::TableNextColumn();
-            ImGui::TextUnformatted(Port_DebugQuery_MemWidthName(w));
+            I18n::TextUnformatted(Port_DebugQuery_MemWidthName(w));
             ImGui::TableNextColumn();
             if (ok)
-                ImGui::Text("0x%0*X  (%u)", (1 << w) * 2, v, v);
+                I18n::Text("0x%0*X  (%u)", (1 << w) * 2, v, v);
             else
-                ImGui::TextDisabled("<unmapped>");
+                I18n::TextDisabled("<unmapped>");
             ImGui::TableNextColumn();
-            if (ImGui::SmallButton("X"))
+            if (I18n::SmallButton("X"))
                 removeIdx = i;
             ImGui::PopID();
         }

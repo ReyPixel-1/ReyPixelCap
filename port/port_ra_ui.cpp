@@ -1,5 +1,5 @@
 /*
- * port_ra_ui.cpp — RetroAchievements UI: the F8 "Achievements" tab and the
+ * port_ra_ui.cpp — RetroAchievements UI: the F8 "Logros" tab and the
  * unlock notification overlay.
  *
  * Reads *only* port_ra.h (state, lists, toast queue) and the ra_* config
@@ -49,12 +49,12 @@ static void RA_DrawAccount(Port_RA_State st) {
     const char* signedInAs = Port_RA_GetUsername();
     const bool busy = (st == PORT_RA_LOGGING_IN);
 
-    ImGui::SeparatorText("Account");
+    ImGui::SeparatorText("Cuenta");
 
     if (signedInAs[0] != '\0') {
-        ImGui::Text("Signed in as %s", signedInAs);
+        ImGui::Text("Sesión iniciada como %s", signedInAs);
         ImGui::SameLine();
-        if (ImGui::Button("Log out")) {
+        if (ImGui::Button("Cerrar sesión")) {
             Port_RA_Logout();
             std::memset(sPassBuf, 0, sizeof(sPassBuf));
         }
@@ -72,42 +72,42 @@ static void RA_DrawAccount(Port_RA_State st) {
     bool submit = false;
     ImGui::BeginDisabled(busy);
     ImGui::SetNextItemWidth(220.0f);
-    if (ImGui::InputText("Username", sUserBuf, sizeof(sUserBuf), ImGuiInputTextFlags_EnterReturnsTrue))
+    if (ImGui::InputText("Usuario", sUserBuf, sizeof(sUserBuf), ImGuiInputTextFlags_EnterReturnsTrue))
         submit = true;
     ImGui::SetNextItemWidth(220.0f);
-    if (ImGui::InputText("Password", sPassBuf, sizeof(sPassBuf),
+    if (ImGui::InputText("Contraseña", sPassBuf, sizeof(sPassBuf),
                          ImGuiInputTextFlags_Password | ImGuiInputTextFlags_EnterReturnsTrue))
         submit = true;
-    if (ImGui::Button("Log in"))
+    if (ImGui::Button("Iniciar sesión"))
         submit = true;
     ImGui::EndDisabled();
 
     if (busy) {
         ImGui::SameLine();
-        ImGui::TextDisabled("(signing in...)");
+        ImGui::TextDisabled("(iniciando sesión...)");
     }
 
     if (submit && !busy && sUserBuf[0] != '\0' && sPassBuf[0] != '\0') {
         Port_RA_Login(sUserBuf, sPassBuf);
         std::memset(sPassBuf, 0, sizeof(sPassBuf)); /* keep it out of memory */
     }
-    ImGui::TextDisabled("The password is used once to obtain a login token; only the token is saved.");
+    ImGui::TextDisabled("La contraseña se usa una sola vez para obtener un token de acceso; solo se guarda el token.");
 }
 
 static void RA_DrawStatus(Port_RA_State st) {
-    ImGui::SeparatorText("Status");
+    ImGui::SeparatorText("Estado");
     ImGui::TextColored(RA_StateColor(st), "%s", Port_RA_GetStatusText());
 
     const char* title = Port_RA_GetGameTitle();
-    ImGui::Text("Game: %s", title[0] ? title : "(not identified)");
+    ImGui::Text("Juego: %s", title[0] ? title : "(no identificado)");
 
     int earned = 0, totalPoints = 0;
     Port_RA_GetPoints(&earned, &totalPoints);
-    ImGui::Text("Points: %d / %d", earned, totalPoints);
+    ImGui::Text("Puntos: %d / %d", earned, totalPoints);
 
     int unlocked = 0, totalAch = 0;
     Port_RA_GetProgress(&unlocked, &totalAch);
-    ImGui::Text("Unlocked: %d / %d", unlocked, totalAch);
+    ImGui::Text("Desbloqueados: %d / %d", unlocked, totalAch);
     if (totalAch > 0) {
         char frac[24];
         std::snprintf(frac, sizeof(frac), "%d / %d", unlocked, totalAch);
@@ -116,7 +116,7 @@ static void RA_DrawStatus(Port_RA_State st) {
 
     const char* rp = Port_RA_GetRichPresence();
     if (rp[0]) {
-        ImGui::TextDisabled("Rich presence:");
+        ImGui::TextDisabled("Estado en Discord:");
         ImGui::PushTextWrapPos(0.0f);
         ImGui::TextUnformatted(rp);
         ImGui::PopTextWrapPos();
@@ -124,11 +124,11 @@ static void RA_DrawStatus(Port_RA_State st) {
 }
 
 static void RA_DrawList(void) {
-    ImGui::SeparatorText("Achievements");
+    ImGui::SeparatorText("Logros");
 
     const int n = Port_RA_GetAchievementCount();
     if (n <= 0) {
-        ImGui::TextDisabled("No achievement set loaded.");
+        ImGui::TextDisabled("No se ha cargado ningún conjunto de logros.");
         return;
     }
 
@@ -143,7 +143,7 @@ static void RA_DrawList(void) {
             ImGui::TextColored(col, "%s %s", a->unlocked ? "[x]" : "[ ]",
                                (a->title && a->title[0]) ? a->title : "(untitled)");
             ImGui::SameLine();
-            ImGui::TextDisabled("%d pts", a->points);
+            ImGui::TextDisabled("%d puntos", a->points);
 
             ImGui::Indent(18.0f);
             if (a->description && a->description[0]) {
@@ -174,16 +174,16 @@ static void RA_DrawList(void) {
  * (64-bit pointer widening moved their fields off the retail offsets) and read
  * as zero, so an achievement keyed on them would be *wrong*, not just stale. */
 static void RA_DrawShadowDiagnostics(void) {
-    if (!ImGui::CollapsingHeader("Memory shadow (diagnostics)"))
+    if (!ImGui::CollapsingHeader("Memoria auxiliar (diagnóstico)"))
         return;
 
     int shadowed = 0, rejected = 0;
     uint32_t bytes = 0;
     Port_GbaShadow_GetStats(&shadowed, &rejected, &bytes);
-    ImGui::Text("Shadowed: %d symbols, %u bytes/frame", shadowed, (unsigned)bytes);
+    ImGui::Text("Símbolos supervisados: %d, %u bytes por fotograma", shadowed, (unsigned)bytes);
     /* Rows, not globals: one entry can group several symbols that share a
      * rejected range, so the row count is not a symbol count. */
-    ImGui::Text("Rejected: %d rows", rejected);
+    ImGui::Text("Filas rechazadas: %d", rejected);
 
     if (rejected > 0) {
         ImGui::TextWrapped("Rejected ranges are not served: their native layout differs from "
@@ -197,7 +197,7 @@ static void RA_DrawShadowDiagnostics(void) {
                     break; /* list ended early — trust the NULL, not the count */
                 ImGui::TextUnformatted(name);
                 ImGui::SameLine();
-                ImGui::TextDisabled("— %s", reason ? reason : "(no reason given)");
+                ImGui::TextDisabled("— %s", reason ? reason : "(sin motivo indicado)");
             }
         }
         ImGui::EndChild();
@@ -207,7 +207,7 @@ static void RA_DrawShadowDiagnostics(void) {
      * achievement logic asked for and the shadow could not serve. Each line is
      * one missing port_gba_shadow.c row. */
     const int unmapped = Port_RA_GetUnmappedCount();
-    ImGui::Text("Unserved reads from the loaded set: %d", unmapped);
+    ImGui::Text("Lecturas no atendidas del conjunto cargado: %d", unmapped);
     if (unmapped > 0) {
         ImGui::TextWrapped("These addresses need a shadow row; the achievements reading them "
                            "stay unsupported until one exists.");
@@ -221,13 +221,13 @@ static void RA_DrawShadowDiagnostics(void) {
         ImGui::EndChild();
         const uint32_t dropped = Port_RA_GetUnmappedDropped();
         if (dropped > 0)
-            ImGui::TextDisabled("(+%u further misses not recorded)", (unsigned)dropped);
+            ImGui::TextDisabled("(+%u fallos adicionales no registrados)", (unsigned)dropped);
     }
 
     /* Self-test perturbs a few bytes of live engine state, so it is strictly
      * on demand — never per frame. */
     static const char* sSelfTestResult = nullptr;
-    if (ImGui::Button("Run shadow self-test"))
+    if (ImGui::Button("Ejecutar prueba de memoria auxiliar"))
         sSelfTestResult = Port_GbaShadow_SelfTest() ? "Self-test passed: GBA address arithmetic is correct."
                                                     : "Self-test FAILED — see stderr.";
     if (ImGui::IsItemHovered()) {
@@ -241,7 +241,7 @@ static void RA_DrawShadowDiagnostics(void) {
         ImGui::EndTooltip();
     }
     ImGui::SameLine();
-    ImGui::TextDisabled("(writes and restores 5 bytes of live state)");
+    ImGui::TextDisabled("(escribe y restaura 5 bytes del estado actual)");
     if (sSelfTestResult)
         ImGui::TextUnformatted(sSelfTestResult);
 }
@@ -252,21 +252,21 @@ extern "C" void Port_RA_UI_DrawTab(void) {
     ImGui::Separator();
 
     bool enabled = Port_Config_GetRaEnabled();
-    if (ImGui::Checkbox("Enable RetroAchievements", &enabled))
+    if (ImGui::Checkbox("Activar RetroAchievements", &enabled))
         Port_Config_SetRaEnabled(enabled);
 
     const Port_RA_State st = Port_RA_GetState();
     if (!enabled) {
-        ImGui::TextDisabled("Disabled — no data is sent to retroachievements.org.");
+        ImGui::TextDisabled("Desactivado: no se envían datos a retroachievements.org.");
         return;
     }
     if (st == PORT_RA_OFF) {
         ImGui::SameLine();
-        ImGui::TextDisabled("(log in below to connect)");
+        ImGui::TextDisabled("(inicia sesión abajo para conectarte)");
     }
 
     bool notify = Port_Config_GetRaNotifications();
-    if (ImGui::Checkbox("Show unlock notifications", &notify))
+    if (ImGui::Checkbox("Mostrar notificaciones de logros", &notify))
         Port_Config_SetRaNotifications(notify);
 
     RA_DrawAccount(st);
@@ -358,7 +358,7 @@ extern "C" void Port_RA_UI_DrawOverlay(void) {
                 ImGui::TextUnformatted(live.toast.subtitle);
             ImGui::PopTextWrapPos();
             if (live.toast.points > 0)
-                ImGui::TextDisabled("%d points", live.toast.points);
+                ImGui::TextDisabled("%d puntos", live.toast.points);
             live.height = ImGui::GetWindowHeight();
         }
         ImGui::End();

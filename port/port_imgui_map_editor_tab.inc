@@ -5,7 +5,7 @@ extern "C" void Port_LevelEditor_Toggle(void);
 extern "C" void Port_LevelEditor_Render(void* renderer, int winW, int winH);
 
 static void DrawRibbonMapEditorTab(void) {
-    ImGui::TextColored(ImVec4(0.4f, 0.8f, 0.4f, 1.0f), "Direct Level Editor Mode");
+    I18n::TextColored(ImVec4(0.4f, 0.8f, 0.4f, 1.0f), "Direct Level Editor Mode");
     ImGui::Separator();
     bool editorOpen = Port_LevelEditor_IsOpen();
 #ifdef TMC_GPU_RENDERER
@@ -16,7 +16,7 @@ static void DrawRibbonMapEditorTab(void) {
     const bool noOverlay = false;
 #endif
     ImGui::BeginDisabled(noOverlay);
-    if (ImGui::Checkbox("Enable Direct Painting Overlay", &editorOpen)) {
+    if (I18n::Checkbox("Enable Direct Painting Overlay", &editorOpen)) {
         Port_LevelEditor_Toggle();
         if (editorOpen) {
             extern void Port_DebugMenu_Toggle(void);
@@ -25,15 +25,15 @@ static void DrawRibbonMapEditorTab(void) {
     }
     ImGui::EndDisabled();
     if (noOverlay)
-        ImGui::TextDisabled("Unavailable on the SDL_GPU renderer backend.");
+        I18n::TextDisabled("Unavailable on the SDL_GPU renderer backend.");
     ImGui::Separator();
-    ImGui::TextDisabled("Controls & Hotkeys:");
-    ImGui::BulletText("Left-Click   : Paint selected tile");
-    ImGui::BulletText("Right-Click  : Eyedropper (sample tile)");
-    ImGui::BulletText("[ / ]        : Previous/next tile ID (Shift: step 16)");
-    ImGui::BulletText("L            : Switch between Top/Bottom layers");
-    ImGui::BulletText("M / F        : Next BGM / fight BGM (Shift: previous)");
-    ImGui::BulletText("K            : Room lighting up (Shift: down)");
-    ImGui::BulletText("S            : Save room to edited_levels/");
-    ImGui::BulletText("Esc          : Close Level Editor");
+    I18n::TextDisabled("Controles y atajos:");
+    ImGui::BulletText("Clic izquierdo: pintar la casilla seleccionada");
+    ImGui::BulletText("Clic derecho: cuentagotas (copiar casilla)");
+    ImGui::BulletText("[ / ]        : ID de casilla anterior/siguiente (Mayús: saltar 16)");
+    ImGui::BulletText("L: cambiar entre capas superior e inferior");
+    ImGui::BulletText("M / F        : Música siguiente / música de combate (Mayús: anterior)");
+    ImGui::BulletText("K            : Aumentar iluminación (Mayús: reducir)");
+    ImGui::BulletText("S            : Guardar habitación en edited_levels/");
+    ImGui::BulletText("Esc: cerrar el editor de niveles");
 }

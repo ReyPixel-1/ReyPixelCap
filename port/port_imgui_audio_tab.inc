@@ -21,7 +21,7 @@ static void DrawRibbonAudioTab(void) {
     {
         float vol = Port_Audio_GetMasterVolume() * 100.0f;
         ImGui::SetNextItemWidth(200.0f);
-        if (ImGui::SliderFloat("Master volume", &vol, 0.0f, 100.0f, "%.0f%%")) {
+        if (I18n::SliderFloat("Master volume", &vol, 0.0f, 100.0f, "%.0f%%")) {
             float v = vol / 100.0f;
             Port_Audio_SetMasterVolume(v);
             Port_Config_SetMasterVolume(v);
@@ -33,7 +33,7 @@ static void DrawRibbonAudioTab(void) {
     }
 
     bool gbaAccurate = Port_Audio_IsGbaAccurate();
-    if (ImGui::Checkbox("GBA-accurate audio", &gbaAccurate)) {
+    if (I18n::Checkbox("GBA-accurate audio", &gbaAccurate)) {
         Port_Audio_SetGbaAccurate(gbaAccurate);
     }
     RandoUi_HelpTooltip("On: NEAREST resampling (the hardware's no-interpolation "
@@ -50,17 +50,17 @@ static void DrawRibbonAudioTab(void) {
     ImGui::BeginDisabled(gbaAccurate);
 
     if (ImGui::BeginTable("##audio_enhancements", 2, ImGuiTableFlags_SizingFixedFit)) {
-        ImGui::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
-        ImGui::TableSetupColumn("Control", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Label", ImGuiTableColumnFlags_WidthFixed, 120.0f);
+        I18n::TableSetupColumn("Control", ImGuiTableColumnFlags_WidthStretch);
 
         // Stereo width
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        ImGui::Text("Stereo width");
+        I18n::Text("Stereo width");
         ImGui::TableSetColumnIndex(1);
         float width = Port_Audio_GetWidth();
         ImGui::SetNextItemWidth(200.0f);
-        if (ImGui::SliderFloat("##width", &width, 1.00f, 1.50f, "%.2f")) {
+        if (I18n::SliderFloat("##width", &width, 1.00f, 1.50f, "%.2f")) {
             Port_Audio_SetWidth(width);
         }
         RandoUi_HelpTooltip("Mid/side stereo widening. 1.00 = mono image (reference), "
@@ -71,11 +71,11 @@ static void DrawRibbonAudioTab(void) {
         // Reverb
         ImGui::TableNextRow();
         ImGui::TableSetColumnIndex(0);
-        ImGui::Text("Reverb");
+        I18n::Text("Reverb");
         ImGui::TableSetColumnIndex(1);
         int reverb = Port_Audio_GetReverbLevel();
         ImGui::SetNextItemWidth(200.0f);
-        if (ImGui::SliderInt("##reverb", &reverb, 0, 24)) {
+        if (I18n::SliderInt("##reverb", &reverb, 0, 24)) {
             Port_Audio_SetReverbLevel(reverb);
         }
         RandoUi_HelpTooltip("Adds a short room tail to sampled (PCM) voices - drums, bass, "
@@ -90,14 +90,14 @@ static void DrawRibbonAudioTab(void) {
     ImGui::EndDisabled();
     ImGui::Separator();
 
-    ImGui::TextWrapped("Per-category SFX mutes. Each toggle suppresses "
+    I18n::TextWrapped("Per-category SFX mutes. Each toggle suppresses "
                        "the matching sound IDs at the SoundReq / EnqueueSFX "
                        "entry points - music and other SFX are untouched.");
     ImGui::Separator();
 
     if (ImGui::BeginTable("##sfx_mutes", 2, ImGuiTableFlags_SizingFixedFit)) {
-        ImGui::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, 220.0f);
-        ImGui::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Left", ImGuiTableColumnFlags_WidthFixed, 220.0f);
+        I18n::TableSetupColumn("Right", ImGuiTableColumnFlags_WidthStretch);
 
         for (int i = 0; i < (int)AUDIO_MUTE_COUNT; ++i) {
             if ((i % 2) == 0)
@@ -107,7 +107,7 @@ static void DrawRibbonAudioTab(void) {
             bool on = Port_AudioMute_IsEnabled((AudioMuteCategory)i);
             const char* label = Port_AudioMute_Label((AudioMuteCategory)i);
             const char* desc = Port_AudioMute_Description((AudioMuteCategory)i);
-            if (ImGui::Checkbox(label, &on)) {
+            if (I18n::Checkbox(label, &on)) {
                 Port_AudioMute_SetEnabled((AudioMuteCategory)i, on);
             }
             if (desc && desc[0]) {

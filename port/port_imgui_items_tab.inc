@@ -20,13 +20,13 @@ static void DrawRibbonItemToggles(void) {
             continue;
         if (!curGroup || strcmp(group, curGroup) != 0) {
             curGroup = group;
-            groupOpen = ImGui::CollapsingHeader(group);
+            groupOpen = I18n::CollapsingHeader(group);
         }
         if (!groupOpen)
             continue;
         bool owned = Port_DebugQuery_ToggleItemOwned(i) != 0;
         ImGui::PushID(i);
-        if (ImGui::Checkbox(Port_DebugQuery_ToggleItemName(i), &owned)) {
+        if (I18n::Checkbox(Port_DebugQuery_ToggleItemName(i), &owned)) {
             Port_DebugAction_SetToggleItem(i, owned ? 1 : 0);
         }
         ImGui::PopID();
@@ -50,11 +50,11 @@ static void DrawRibbonDungeonItems(void) {
         sDungeon = 0;
 
     ImGui::SetNextItemWidth(180);
-    if (ImGui::BeginCombo("Dungeon", DungeonLabel(sDungeon, cur))) {
+    if (I18n::BeginCombo("Dungeon", DungeonLabel(sDungeon, cur))) {
         for (int d = 0; d < 16; ++d) {
             const bool sel = (d == sDungeon);
             ImGui::PushID(d);
-            if (ImGui::Selectable(DungeonLabel(d, cur), sel))
+            if (I18n::Selectable(DungeonLabel(d, cur), sel))
                 sDungeon = d;
             if (sel)
                 ImGui::SetItemDefaultFocus();
@@ -64,7 +64,7 @@ static void DrawRibbonDungeonItems(void) {
     }
     if (cur >= 0) {
         ImGui::SameLine();
-        if (ImGui::SmallButton("Jump to current"))
+        if (I18n::SmallButton("Jump to current"))
             sDungeon = cur;
     }
 
@@ -72,18 +72,18 @@ static void DrawRibbonDungeonItems(void) {
     bool map = (bits & 0x1) != 0;
     bool comp = (bits & 0x2) != 0;
     bool big = (bits & 0x4) != 0;
-    if (ImGui::Checkbox("Map", &map))
+    if (I18n::Checkbox("Map", &map))
         Port_DebugAction_SetDungeonItem(sDungeon, 0, map);
     ImGui::SameLine();
-    if (ImGui::Checkbox("Compass", &comp))
+    if (I18n::Checkbox("Compass", &comp))
         Port_DebugAction_SetDungeonItem(sDungeon, 1, comp);
     ImGui::SameLine();
-    if (ImGui::Checkbox("Big Key", &big))
+    if (I18n::Checkbox("Big Key", &big))
         Port_DebugAction_SetDungeonItem(sDungeon, 2, big);
 
     int keys = Port_DebugQuery_DungeonKeys(sDungeon);
     ImGui::SetNextItemWidth(120);
-    if (ImGui::InputInt("Small keys", &keys)) {
+    if (I18n::InputInt("Small keys", &keys)) {
         if (keys < 0)
             keys = 0;
         if (keys > 255)
@@ -106,13 +106,13 @@ static void DrawTimedBuff(const char* label, const char* lname, const char* appl
     char tag[32];
     ImGui::SetNextItemWidth(200);
     std::snprintf(tag, sizeof(tag), "%s type", label);
-    ImGui::Combo(tag, sel, names, count);
+    I18n::Combo(tag, sel, names, count);
     ImGui::SetNextItemWidth(200);
     std::snprintf(tag, sizeof(tag), "%s frames", label);
-    ImGui::SliderInt(tag, frames, 0, 65535, "%d", ImGuiSliderFlags_Logarithmic);
+    I18n::SliderInt(tag, frames, 0, 65535, "%d", ImGuiSliderFlags_Logarithmic);
     ImGui::SameLine();
     std::snprintf(tag, sizeof(tag), "Apply##%s", applyId);
-    if (ImGui::Button(tag)) {
+    if (I18n::Button(tag)) {
         apply(ids[*sel], *frames);
         char toast[40];
         std::snprintf(toast, sizeof(toast), "%s %s", label, *sel == 0 ? "cleared" : "applied");
@@ -120,9 +120,9 @@ static void DrawTimedBuff(const char* label, const char* lname, const char* appl
     }
     int id = 0, timer = 0;
     if (query(&id, &timer))
-        ImGui::TextDisabled("%s active: id %d, %d frames (%.1fs left)", lname, id, timer, timer / 60.0f);
+        I18n::TextDisabled("%s active: id %d, %d frames (%.1fs left)", lname, id, timer, timer / 60.0f);
     else
-        ImGui::TextDisabled("%s: inactive", lname);
+        I18n::TextDisabled("%s: inactive", lname);
 }
 
 /* Charm + Picolyte activator. The combo + slider compose a buff to apply on
@@ -163,7 +163,7 @@ static void DrawRibbonStats(void) {
         const int hi = Port_DebugQuery_StatMax(i);
         ImGui::PushID(i);
         ImGui::SetNextItemWidth(220);
-        if (ImGui::SliderInt(Port_DebugQuery_StatName(i), &v, lo, hi)) {
+        if (I18n::SliderInt(Port_DebugQuery_StatName(i), &v, lo, hi)) {
             Port_DebugAction_SetStat(i, v);
         }
         ImGui::PopID();
@@ -180,10 +180,10 @@ static void DrawRibbonBottles(void) {
         char label[16];
         snprintf(label, sizeof(label), "Bottle %d", b + 1);
         ImGui::SetNextItemWidth(200);
-        if (ImGui::BeginCombo(label, Port_DebugQuery_BottleContentName(curIdx))) {
+        if (I18n::BeginCombo(label, Port_DebugQuery_BottleContentName(curIdx))) {
             for (int i = 0; i < nContents; ++i) {
                 const bool sel = (i == curIdx);
-                if (ImGui::Selectable(Port_DebugQuery_BottleContentName(i), sel)) {
+                if (I18n::Selectable(Port_DebugQuery_BottleContentName(i), sel)) {
                     Port_DebugAction_SetBottleContent(b, Port_DebugQuery_BottleContentId(i));
                 }
                 if (sel)
@@ -193,7 +193,7 @@ static void DrawRibbonBottles(void) {
         }
         if (!owned) {
             ImGui::SameLine();
-            ImGui::TextDisabled("(not owned — pick to grant)");
+            I18n::TextDisabled("(not owned — pick to grant)");
         }
         ImGui::PopID();
     }
@@ -201,46 +201,46 @@ static void DrawRibbonBottles(void) {
 
 static void DrawRibbonItemsTab(void) {
     if (ImGui::BeginTable("##items_tab_table", 2, ImGuiTableFlags_SizingFixedFit)) {
-        ImGui::TableSetupColumn("Stats & Unlocks", ImGuiTableColumnFlags_WidthFixed, 220.0f);
-        ImGui::TableSetupColumn("Recovery & Cheats", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Stats & Unlocks", ImGuiTableColumnFlags_WidthFixed, 220.0f);
+        I18n::TableSetupColumn("Recovery & Cheats", ImGuiTableColumnFlags_WidthStretch);
         ImGui::TableNextRow();
 
         ImGui::TableSetColumnIndex(0);
-        ImGui::SeparatorText("Stats & Unlocks");
-        if (ImGui::Button("Unlock all items", ImVec2(200, 0))) {
+        I18n::SeparatorText("Stats & Unlocks");
+        if (I18n::Button("Unlock all items", ImVec2(200, 0))) {
             Port_DebugAction_GiveAllItems();
             Port_DebugMenu_ToastFromExternal("All items granted");
         }
-        if (ImGui::Button("All kinstones fused", ImVec2(200, 0))) {
+        if (I18n::Button("All kinstones fused", ImVec2(200, 0))) {
             Port_DebugAction_AllKinstones();
             Port_DebugMenu_ToastFromExternal("All kinstones");
         }
-        if (ImGui::Button("All figurines (130)", ImVec2(200, 0))) {
+        if (I18n::Button("All figurines (130)", ImVec2(200, 0))) {
             Port_DebugAction_AllFigurines130();
             Port_DebugMenu_ToastFromExternal("All 130 figurines (no game-clear)");
         }
-        if (ImGui::Button("Figurines 100% (marks beaten)", ImVec2(200, 0))) {
+        if (I18n::Button("Figurines 100% (marks beaten)", ImVec2(200, 0))) {
             Port_DebugAction_AllFigurines100();
             Port_DebugMenu_ToastFromExternal("136 figurines + game marked cleared");
         }
 
         ImGui::TableSetColumnIndex(1);
-        ImGui::SeparatorText("Recovery & Cheats");
-        if (ImGui::Button("Heal", ImVec2(120, 0))) {
+        I18n::SeparatorText("Recovery & Cheats");
+        if (I18n::Button("Heal", ImVec2(120, 0))) {
             Port_DebugAction_HealFull();
             Port_DebugMenu_ToastFromExternal("Healed");
         }
         ImGui::SameLine();
-        if (ImGui::Button("Max hearts", ImVec2(120, 0))) {
+        if (I18n::Button("Max hearts", ImVec2(120, 0))) {
             Port_DebugAction_MaxHearts();
             Port_DebugMenu_ToastFromExternal("Hearts maxed");
         }
-        if (ImGui::Button("999 rupees", ImVec2(120, 0))) {
+        if (I18n::Button("999 rupees", ImVec2(120, 0))) {
             Port_DebugAction_MaxRupees();
             Port_DebugMenu_ToastFromExternal("999 rupees");
         }
         ImGui::SameLine();
-        if (ImGui::Button("999 shells", ImVec2(120, 0))) {
+        if (I18n::Button("999 shells", ImVec2(120, 0))) {
             Port_DebugAction_MaxShells();
             Port_DebugMenu_ToastFromExternal("999 shells");
         }
@@ -249,22 +249,22 @@ static void DrawRibbonItemsTab(void) {
     }
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Per-item toggle");
+    I18n::SeparatorText("Per-item toggle");
     DrawRibbonItemToggles();
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Dungeon items (any dungeon)");
+    I18n::SeparatorText("Dungeon items (any dungeon)");
     DrawRibbonDungeonItems();
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Counts & capacities");
+    I18n::SeparatorText("Counts & capacities");
     DrawRibbonStats();
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Bottle contents");
+    I18n::SeparatorText("Bottle contents");
     DrawRibbonBottles();
 
     ImGui::Spacing();
-    ImGui::SeparatorText("Charm / Picolyte");
+    I18n::SeparatorText("Charm / Picolyte");
     DrawRibbonBuffs();
 }

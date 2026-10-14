@@ -12,22 +12,22 @@ static void DrawRibbonFlagsTab(void) {
     /* Flag notifications toggle — persisted to config.json, default off. */
     {
         bool notif = Port_Config_GetDebugFlagNotifications();
-        if (ImGui::Checkbox("Flag notifications (log + on-screen toast on flag set)", &notif))
+        if (I18n::Checkbox("Flag notifications (log + on-screen toast on flag set)", &notif))
             Port_Config_SetDebugFlagNotifications(notif);
         if (ImGui::IsItemHovered())
-            ImGui::SetTooltip("When enabled, every flag activation is printed to the terminal\nand shown as an on-screen toast notification.");
+            I18n::SetTooltip("When enabled, every flag activation is printed to the terminal\nand shown as an on-screen toast notification.");
     }
     ImGui::Separator();
 
-    ImGui::TextUnformatted("Raw save flags (gSave.flags). Bank 0 = global; 1-12 = local pools.");
+    I18n::TextUnformatted("Raw save flags (gSave.flags). Bank 0 = global; 1-12 = local pools.");
     ImGui::SetNextItemWidth(220);
-    if (ImGui::BeginCombo("Bank", Port_DebugQuery_FlagBankName(sBank))) {
+    if (I18n::BeginCombo("Bank", Port_DebugQuery_FlagBankName(sBank))) {
         for (int b = 0; b < nBanks; ++b) {
             const bool selected = (b == sBank);
             ImGui::PushID(b);
             char lbl[64];
             snprintf(lbl, sizeof(lbl), "%s%s", Port_DebugQuery_FlagBankName(b), (b == cur) ? "  (current area)" : "");
-            if (ImGui::Selectable(lbl, selected))
+            if (I18n::Selectable(lbl, selected))
                 sBank = b;
             if (selected)
                 ImGui::SetItemDefaultFocus();
@@ -37,29 +37,29 @@ static void DrawRibbonFlagsTab(void) {
     }
     if (cur >= 0) {
         ImGui::SameLine();
-        if (ImGui::SmallButton("Jump to current area"))
+        if (I18n::SmallButton("Jump to current area"))
             sBank = cur;
     }
 
     const int size = Port_DebugQuery_FlagBankSize(sBank);
     const unsigned int off = Port_DebugQuery_FlagBankOffset(sBank);
-    ImGui::Text("%d flags  (bit offset 0x%03X)", size, off);
-    ImGui::TextDisabled("Heads-up: some flags fire cutscenes / credits the moment they're set.");
+    I18n::Text("%d flags  (bit offset 0x%03X)", size, off);
+    I18n::TextDisabled("Heads-up: some flags fire cutscenes / credits the moment they're set.");
 
     /* Search bar + "show only active" checkbox on the same row. */
     static char sSearchBuf[128] = "";
     static bool sShowOnlyActive = false;
     ImGui::SetNextItemWidth(280);
-    ImGui::InputText("##search_filter", sSearchBuf, sizeof(sSearchBuf));
+    I18n::InputText("##search_filter", sSearchBuf, sizeof(sSearchBuf));
     ImGui::SameLine();
     if (sSearchBuf[0] != '\0') {
-        if (ImGui::Button("Clear"))
+        if (I18n::Button("Clear"))
             sSearchBuf[0] = '\0';
         ImGui::SameLine();
     }
-    ImGui::TextUnformatted("Search");
+    I18n::TextUnformatted("Search");
     ImGui::SameLine();
-    ImGui::Checkbox("Show only active", &sShowOnlyActive);
+    I18n::Checkbox("Show only active", &sShowOnlyActive);
 
     /* Candidate list, rebuilt only when the search text / bank change. "Show
      * only active" rescans every frame (membership depends on live flag bits
@@ -163,12 +163,12 @@ static void DrawRibbonFlagsTab(void) {
                     snprintf(lbl, sizeof(lbl), "idx %4d (0x%03X)   bit 0x%03X", i, i, bankOff + (unsigned)i);
             }
 
-            if (ImGui::Checkbox(lbl, &on))
+            if (I18n::Checkbox(lbl, &on))
                 Port_DebugAction_SetFlag(bank, i, on ? 1 : 0);
 
             if (flagDesc && flagDesc[0] != '\0' && strcmp(flagDesc, "undocumented") != 0) {
                 if (ImGui::IsItemHovered())
-                    ImGui::SetTooltip("%s", flagDesc);
+                    I18n::SetTooltip("%s", flagDesc);
             }
             ImGui::PopID();
         }

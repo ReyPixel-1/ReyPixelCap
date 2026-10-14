@@ -114,6 +114,7 @@ int sPreferredLanguage = -1;
  * the historical plain-bars look. */
 PortAspectMode sAspectMode = PORT_ASPECT_NATIVE_3_2;
 PortBgFill sBgFill = PORT_BG_FILL_BLURRED_FRAME;
+unsigned sGpuFilterCfg = 255u; /* 255 = not saved */
 u8 sBgFillR = 0, sBgFillG = 0, sBgFillB = 0;
 /* Renderer backend selection — read once at PPU init; menu writes
  * here but a restart is needed to apply because the window's
@@ -157,6 +158,7 @@ bool sColorCorrect = true; /* GBA-LCD colour correction (default on) */
 #endif
 bool sLcdPersist = false;      /* LCD temporal persistence (default off) */
 float sLcdPersistRho = 0.35f;  /* persistence: fraction of prev frame kept */
+bool sMenuLangEs = false;
 bool sRibbonCfg = true;        /* F8 menu style: ribbon (true) vs classic */
 bool sMenuHintSeen = false;    /* set once the F8/settings menu is first opened */
 float sMasterVolume = 1.0f;    /* game master volume [0,1]; 1.0 = unchanged */
@@ -291,6 +293,7 @@ const BoolCfg kBoolCfg[] = {
 #endif
     { "lcd_persistence", &sLcdPersist, false },
     { "ribbon_mode", &sRibbonCfg, true },
+    { "menu_lang_es", &sMenuLangEs, false },
     { "menu_hint_seen", &sMenuHintSeen, false },
     { "hold_advance_text", &sHoldAdvanceText, false },
     { "roll_attack_macro", &sRollAttackMacroEnabled, true },
@@ -710,6 +713,7 @@ extern "C" void Port_Config_Load(const char* path) {
             fprintf(stderr, "[CONFIG] frame_time_ns out of range; using default.\n");
             sFrameTimeNs = kDefaultFrameTimeNs;
         }
+        sGpuFilterCfg = JsonValue(j, "gpu_filter", 255u);
         sAutosaveIntervalMs = JsonValue(j, "autosave_interval_ms", 60000u); // ponytail: lone u32, not worth a table
         {
             std::string ts = JsonValue(j, "touch_scheme", std::string("joystick"));
@@ -1146,6 +1150,16 @@ extern "C" void Port_Config_SetBgFill(PortBgFill fill) {
             break;
     }
     sConfigJson["bg_fill"] = name;
+    SaveConfig();
+}
+
+extern "C" int Port_Config_GetGpuFilter(void) {
+    return sGpuFilterCfg == 255u ? -1 : (int)sGpuFilterCfg;
+}
+
+extern "C" void Port_Config_SetGpuFilter(int f) {
+    sGpuFilterCfg = (f < 0) ? 255u : (unsigned)f;
+    sConfigJson["gpu_filter"] = f;
     SaveConfig();
 }
 
@@ -1892,6 +1906,14 @@ extern "C" bool Port_Config_GetRibbonEnabled(void) {
 extern "C" void Port_Config_SetRibbonEnabled(bool on) {
     sRibbonCfg = on;
     sConfigJson["ribbon_mode"] = on;
+    SaveConfig();
+}
+extern "C" bool Port_Config_GetMenuLangEs(void) {
+    return sMenuLangEs;
+}
+extern "C" void Port_Config_SetMenuLangEs(bool on) {
+    sMenuLangEs = on;
+    sConfigJson["menu_lang_es"] = on;
     SaveConfig();
 }
 extern "C" bool Port_Config_GetMenuHintSeen(void) {

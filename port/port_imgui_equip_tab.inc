@@ -3,18 +3,18 @@
 /* The < / > soft-slot assignment cycler, shared by the Equip tab and the
  * in-game soft-slot config overlay (caller draws the surrounding row). */
 static void DrawSoftSlotCycleButtons(int slot) {
-    if (ImGui::Button("<"))
+    if (I18n::Button("<"))
         Port_SoftSlots_CycleAssignment(slot, -1);
     ImGui::SameLine();
-    if (ImGui::Button(">"))
+    if (I18n::Button(">"))
         Port_SoftSlots_CycleAssignment(slot, +1);
 }
 
 static void DrawRibbonEquipTab(void) {
     if (ImGui::BeginTable("##equip_table", 3, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Slot", ImGuiTableColumnFlags_WidthFixed, 60.0f);
-        ImGui::TableSetupColumn("Assigned Item", ImGuiTableColumnFlags_WidthFixed, 220.0f);
-        ImGui::TableSetupColumn("Cycle", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("Slot", ImGuiTableColumnFlags_WidthFixed, 60.0f);
+        I18n::TableSetupColumn("Assigned Item", ImGuiTableColumnFlags_WidthFixed, 220.0f);
+        I18n::TableSetupColumn("Cycle", ImGuiTableColumnFlags_WidthStretch);
 
         for (int s = 0; s < 4; ++s) {
             ImGui::PushID(s);
@@ -22,7 +22,7 @@ static void DrawRibbonEquipTab(void) {
 
             // Column 1: Slot name
             ImGui::TableSetColumnIndex(0);
-            ImGui::Text("%s", Port_SoftSlots_SlotName(s));
+            I18n::Text("%s", Port_SoftSlots_SlotName(s));
 
             // Column 2: Assigned item name
             ImGui::TableSetColumnIndex(1);
@@ -31,7 +31,7 @@ static void DrawRibbonEquipTab(void) {
             const char* item_name = colon ? colon + 1 : label;
             while (*item_name == ' ')
                 ++item_name;
-            ImGui::Text("%s", item_name);
+            I18n::Text("%s", item_name);
 
             // Column 3: Buttons
             ImGui::TableSetColumnIndex(2);

@@ -41,7 +41,7 @@ static const char* InputLabel(int input) {
 }
 
 static void DrawRibbonControlsTab(void) {
-    if (ImGui::CollapsingHeader("Keyboard shortcuts")) {
+    if (I18n::CollapsingHeader("Keyboard shortcuts")) {
         struct HotkeyRow {
             const char* key;
             const char* action;
@@ -62,61 +62,61 @@ static void DrawRibbonControlsTab(void) {
         };
         if (ImGui::BeginTable("##hotkeys", 2,
                               ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersInnerH)) {
-            ImGui::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 130.0f);
-            ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch);
+            I18n::TableSetupColumn("Key", ImGuiTableColumnFlags_WidthFixed, 130.0f);
+            I18n::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthStretch);
             for (const HotkeyRow& row : kHotkeys) {
                 ImGui::TableNextRow();
                 ImGui::TableSetColumnIndex(0);
-                ImGui::TextColored(ImVec4(0.6f, 0.85f, 1.0f, 1.0f), "%s", row.key);
+                I18n::TextColored(ImVec4(0.6f, 0.85f, 1.0f, 1.0f), "%s", row.key);
                 ImGui::TableSetColumnIndex(1);
-                ImGui::TextUnformatted(row.action);
+                I18n::TextUnformatted(row.action);
             }
             ImGui::EndTable();
         }
-        ImGui::TextDisabled("Save-states (F1-F6) are disabled in Console-Parity mode.");
+        I18n::TextDisabled("Save-states (F1-F6) are disabled in Console-Parity mode.");
     }
 #ifdef __ANDROID__
-    if (ImGui::CollapsingHeader("Touch controls", ImGuiTreeNodeFlags_DefaultOpen)) {
+    if (I18n::CollapsingHeader("Touch controls", ImGuiTreeNodeFlags_DefaultOpen)) {
         {
             int scheme = (Port_Config_TouchScheme() == PORT_TOUCH_SCHEME_DPAD) ? 1 : 0;
             const char* items[] = { "Joystick (floating)", "D-pad" };
-            if (ImGui::Combo("Movement", &scheme, items, 2)) {
+            if (I18n::Combo("Movement", &scheme, items, 2)) {
                 Port_Config_SetTouchScheme(scheme == 1 ? PORT_TOUCH_SCHEME_DPAD : PORT_TOUCH_SCHEME_JOYSTICK);
             }
             if (ImGui::IsItemHovered()) {
-                ImGui::SetTooltip("Joystick: touch anywhere on the lower-left of the screen to "
+                I18n::SetTooltip("Joystick: touch anywhere on the lower-left of the screen to "
                                   "plant the stick there.\nD-pad: fixed four-way pad.");
             }
         }
         {
             float v = Port_Config_TouchScale();
-            if (ImGui::SliderFloat("Button size", &v, 0.6f, 1.6f, "%.2fx")) {
+            if (I18n::SliderFloat("Button size", &v, 0.6f, 1.6f, "%.2fx")) {
                 Port_Config_SetTouchScale(v);
             }
         }
         {
             float v = Port_Config_TouchOpacity();
-            if (ImGui::SliderFloat("Overlay opacity", &v, 0.3f, 1.5f, "%.2fx")) {
+            if (I18n::SliderFloat("Overlay opacity", &v, 0.3f, 1.5f, "%.2fx")) {
                 Port_Config_SetTouchOpacity(v);
             }
         }
-        ImGui::TextDisabled("The R button glows green when it has an action (talk, read, lift...).");
+        I18n::TextDisabled("The R button glows green when it has an action (talk, read, lift...).");
     }
     ImGui::Separator();
 #endif
     {
         bool on = Port_Config_GetRollAttackMacroEnabled();
-        if (ImGui::Checkbox("Roll attack macro", &on)) {
+        if (I18n::Checkbox("Roll attack macro", &on)) {
             Port_Config_SetRollAttackMacroEnabled(on);
         }
         if (ImGui::IsItemHovered()) {
-            ImGui::SetTooltip("Hold a direction and press the Roll attack bind to perform a "
+            I18n::SetTooltip("Hold a direction and press the Roll attack bind to perform a "
                               "start-of-roll attack with your best sword, regardless of A/B "
                               "equip.\nDefault: keyboard D, controller R3 (right stick click).");
         }
     }
     ImGui::Separator();
-    ImGui::TextWrapped("Click 'Set' to replace an action's binding, or 'Add' to bind an extra "
+    I18n::TextWrapped("Click 'Set' to replace an action's binding, or 'Add' to bind an extra "
                        "key/controller button to it, then press the input. Esc cancels. Mappings "
                        "save to config.json automatically. In Console-Parity mode each physical "
                        "input maps to only one action.");
@@ -124,21 +124,21 @@ static void DrawRibbonControlsTab(void) {
 
     /* Two-column-ish table: action label | bindings + buttons. */
     if (ImGui::BeginTable("##controls", 3, ImGuiTableFlags_BordersInnerH | ImGuiTableFlags_RowBg)) {
-        ImGui::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthFixed, 200.0f);
-        ImGui::TableSetupColumn("Bindings", ImGuiTableColumnFlags_WidthStretch);
-        ImGui::TableSetupColumn("##actions", ImGuiTableColumnFlags_WidthFixed, 180.0f);
+        I18n::TableSetupColumn("Action", ImGuiTableColumnFlags_WidthFixed, 200.0f);
+        I18n::TableSetupColumn("Bindings", ImGuiTableColumnFlags_WidthStretch);
+        I18n::TableSetupColumn("##actions", ImGuiTableColumnFlags_WidthFixed, 180.0f);
 
         for (int i = 0; i < PORT_INPUT_COUNT; ++i) {
             ImGui::PushID(i);
             ImGui::TableNextRow();
 
             ImGui::TableSetColumnIndex(0);
-            ImGui::TextUnformatted(InputLabel(i));
+            I18n::TextUnformatted(InputLabel(i));
 
             ImGui::TableSetColumnIndex(1);
             const int n = Port_Config_BindingCount((PortInput)i);
             if (n == 0) {
-                ImGui::TextDisabled("(unbound)");
+                I18n::TextDisabled("(unbound)");
             } else {
                 for (int b = 0; b < n; ++b) {
                     char label[64];
@@ -146,23 +146,23 @@ static void DrawRibbonControlsTab(void) {
                     if (b > 0)
                         ImGui::SameLine(0, 6);
                     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.18f, 0.30f, 0.45f, 1.0f));
-                    ImGui::Button(label);
+                    I18n::Button(label);
                     ImGui::PopStyleColor();
                 }
             }
 
             ImGui::TableSetColumnIndex(2);
-            if (ImGui::Button("Set")) {
+            if (I18n::Button("Set")) {
                 Port_Config_BeginCaptureBinding((PortInput)i);
                 ImGui::OpenPopup("Capture binding");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Add")) {
+            if (I18n::Button("Add")) {
                 Port_Config_BeginAddBinding((PortInput)i);
                 ImGui::OpenPopup("Capture binding");
             }
             ImGui::SameLine();
-            if (ImGui::Button("Clear")) {
+            if (I18n::Button("Clear")) {
                 Port_Config_ClearBindings((PortInput)i);
             }
 
@@ -174,11 +174,11 @@ static void DrawRibbonControlsTab(void) {
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
             if (ImGui::BeginPopupModal("Capture binding", nullptr,
                                        ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove)) {
-                ImGui::Text("Press a key or controller button for:");
-                ImGui::TextColored(ImVec4(1, 0.94f, 0.25f, 1), "%s", InputLabel(i));
-                ImGui::Text("Esc cancels.");
+                I18n::Text("Press a key or controller button for:");
+                I18n::TextColored(ImVec4(1, 0.94f, 0.25f, 1), "%s", InputLabel(i));
+                I18n::Text("Esc cancels.");
                 ImGui::Separator();
-                if (ImGui::Button("Cancel") || !Port_Config_IsCapturingBinding()) {
+                if (I18n::Button("Cancel") || !Port_Config_IsCapturingBinding()) {
                     Port_Config_CancelCaptureBinding();
                     ImGui::CloseCurrentPopup();
                 }
@@ -193,7 +193,7 @@ static void DrawRibbonControlsTab(void) {
     ImGui::Separator();
     ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.55f, 0.30f, 0.20f, 1.0f));
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.75f, 0.40f, 0.30f, 1.0f));
-    if (ImGui::Button("Reset all to defaults")) {
+    if (I18n::Button("Reset all to defaults")) {
         Port_Config_ResetAllBindings();
         Port_DebugMenu_ToastFromExternal("Bindings reset");
     }

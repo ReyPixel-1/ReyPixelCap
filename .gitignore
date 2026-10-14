@@ -159,3 +159,27 @@ android/local.properties
 android/.gradle/
 android/app/build/
 
+
+# ReyPixelCap: artefactos locales y datos del juego
+/lanzador/.git/
+/lanzador/.venv/
+/lanzador/build/
+/lanzador/error.log
+/lanzador/appimagetool
+/lanzador/AutoTMC-x86_64.AppImage
+/PixelCap.AppImage
+/PixelCap-anterior.AppImage
+/PixelCap.AppDir/
+/construccion-lanzador/
+/paquete-appimage/
+/error-construccion.txt
+/port/*.bak*
+/state_eu_*.bin
+/spoilers/
+
+# Binarios generados del lanzador
+/lanzador/AutoTMC-Linux
+/lanzador/appimagetool
+/lanzador/AutoTMC.AppDir/
+/lanzador/*.spec
+/lanzador/error.log

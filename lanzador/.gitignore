@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+error.log
+dist/
+build/
+*.AppImage
+
+AutoTMC.AppDir/
